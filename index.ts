@@ -422,7 +422,7 @@ export function getNumberFormatted(
 export function getNumberString(
   num: any,
   maxDecimalPlaces: number,
-  minDecimalPlaces: number | null
+  minDecimalPlaces: number | null = null
 ): string {
   if (isString(num, 1) && !isNaN(num)) {
     num = +num;
