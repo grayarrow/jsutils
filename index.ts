@@ -22,9 +22,9 @@ export function arrFirst(obj: any, defaultIfNone: any = null): any {
  * @param isAsc True if you want to sort ascending.
  * @returns -1, 0 or 1 depending on the sort direction.
  */
-export function compare(
-  a: object,
-  b: object,
+export function compareSortOrder(
+  a: any,
+  b: any,
   isAsc: string | boolean = true
 ): Number {
   if (isNullOrUndefined(isAsc)) {
@@ -52,6 +52,21 @@ export function compare(
   }
 
   // return (a < b ? -1 : 1) * (isAsc ? 1 : -1)
+}
+
+/**
+ * Compares two strings and returns a value for used in the JavaScript sort() method.
+ * @param a The first string to compare with.
+ * @param b The second string to compare with.
+ * @param isAsc True if you want to sort ascending.
+ * @param compareLowercase True if you want to do a lowercase compare.
+ * @returns -1, 0 or 1 depending on the sort direction.
+ */
+ export function compareStrings(a: string, b: string, isAsc: string | boolean = true, compareLowercase = true) {
+  const atest = compareLowercase ? safestrLowercase(a) : safestr(a);
+  const btest = compareLowercase ? safestrLowercase(b) : safestr(b);
+
+  return compareSortOrder(atest, btest, isAsc);
 }
 
 /**
