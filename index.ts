@@ -88,7 +88,7 @@ export function compareStrings(
   b: string,
   isAsc: string | boolean = true,
   compareLowercase = true
-) {
+): number {
   const atest = compareLowercase ? safestrLowercase(a) : safestr(a);
   const btest = compareLowercase ? safestrLowercase(b) : safestr(b);
 
@@ -422,7 +422,7 @@ export function getNumberFormatted(
 export function getNumberString(
   num: any,
   maxDecimalPlaces: number,
-  minDecimalPlaces: number
+  minDecimalPlaces: number | null
 ): string {
   if (isString(num, 1) && !isNaN(num)) {
     num = +num;
