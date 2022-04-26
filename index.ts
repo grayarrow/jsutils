@@ -1,6 +1,27 @@
 type StringOrArray = string | string[];
 
 /**
+ * Adds obj to the list of objects, creating the list if it doesn't exist.
+ * If obj is an array, loops through the array.
+ * @param listObjects An array of objects.
+ * @param obj Array of items to add to listObjects.
+ * @returns listObjects. If null, was passed, it is a new array.
+ */
+export function addObjectToList(listObjects: any[], obj: any[]): any {
+  if (isNullOrUndefined(obj)) {
+    return;
+  }
+
+  listObjects = listObjects || [];
+
+  for (let i = 0; getObject(obj, i); ++i) {
+    listObjects.push(getObject(obj, i));
+  }
+
+  return listObjects;
+}
+
+/**
  * Gets the first item from an array, or a default value if the array is empty. Null is returned if no default value provided.
  * Good for quick tests of objects to see if it is an array, and getting the first value.
  * @param obj The array to get the first value from, if it is an array.
@@ -418,12 +439,13 @@ export function getNumberString(
 
 /**
  * Gets an object from an array at the given index.
+ * Or if it is not an array, just returns the object.
  * Protects from empty objects and indexes that are out of bounds.
  * @param arr An object array to get the index item of.
  * @param index The index of the object array to return
  * @returns The given object at arr[index], or null if it does not exist.
  */
-export function getObject(arr: any[], index = 0) {
+export function getObject(arr: any, index = 0) {
   if (!isNullOrUndefined(arr)) {
     index = index || 0;
 
