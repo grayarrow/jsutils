@@ -62,11 +62,179 @@ export function compareSortOrder(
  * @param compareLowercase True if you want to do a lowercase compare.
  * @returns -1, 0 or 1 depending on the sort direction.
  */
- export function compareStrings(a: string, b: string, isAsc: string | boolean = true, compareLowercase = true) {
+export function compareStrings(
+  a: string,
+  b: string,
+  isAsc: string | boolean = true,
+  compareLowercase = true
+) {
   const atest = compareLowercase ? safestrLowercase(a) : safestr(a);
   const btest = compareLowercase ? safestrLowercase(b) : safestr(b);
 
   return compareSortOrder(atest, btest, isAsc);
+}
+
+/**
+ * Method to wrap deep object comparison. The changes are mapped and returned.
+ * Generally used for checking in real-time form data changes.
+ * i.e., isDirty = deepDiffMapper().anyChanges(formOriginalValues, formCurrentValues);
+ * @returns An object that wraps varying levels of comparison information.
+ */
+export function deepDiffMapper(): any {
+  return {
+    VALUE_CREATED: "created",
+    VALUE_UPDATED: "updated",
+    VALUE_DELETED: "deleted",
+    VALUE_UNCHANGED: "unchanged",
+
+    /**
+     * Checks if there are any changes between two objects.
+     * @param obj1 First object to compare.
+     * @param obj2 Second object to compare.
+     * @returns True if any changes between the objects.
+     */
+    anyChanges(obj1: any, obj2: any): boolean {
+      const changed = this.getChanges(obj1, obj2);
+
+      // console.log('skky.deepDiffMapper.anyChanges: changed:', changed, ', isNullOrUndefined:', isNullOrUndefined(changed));
+      return !isNullOrUndefined(changed);
+      // return Object.values(objChanges).filter(x => isNullOrUndefined(x) || ('unchanged' !== x)).length > 0;
+    },
+    /**
+     * Checks if there are any changes between two objects and returns the changes.
+     * @param obj1 First object to compare.
+     * @param obj2 Second object to compare.
+     * @returns The changed items between the two objects.
+     */
+    getChanges(obj1: any, obj2: any): any {
+      const objChanges = this.map(obj1, obj2);
+      const changeEntries = Object.entries(objChanges);
+
+      // console.log('hasType:', this.isObject(objChanges, 'type'),
+      //             ', objChanges:', objChanges,
+      //             ', values:', Object.values(objChanges),
+      //             ', obj1:', obj1,
+      //             ', obj2:', obj2);
+
+      // Are we dealing with a simple value comparison?
+      if (
+        2 === changeEntries.length &&
+        isObject(objChanges, "type") &&
+        isObject(objChanges, "data")
+      ) {
+        return "unchanged" !== objChanges.type;
+      }
+
+      // We are dealing with a larger object or array comparison.
+      return changeEntries.find(this.findTypeData, this);
+    },
+    /**
+     * Looks for an object with key value pairs and returns if it found changes.
+     * @param param0 A key value pair to look for changes. Deep inspection
+     * @returns True if an object with type and data is found with changes present.
+     */
+    findTypeData([key, value]: [string, any]): boolean {
+      const found =
+        isObject(value, "type") &&
+        isObject(value, "data") &&
+        2 === Object.entries(value).length &&
+        // eslint-disable-next-line @typescript-eslint/dot-notation
+        "unchanged" !== value["type"];
+
+      return (
+        found ||
+        (isObject(value) && Object.entries(value).find(this.findTypeData, this)
+          ? true
+          : false)
+      );
+    },
+    /**
+     * Maps all changes between two objects.
+     * @param obj1 The first object to compare.
+     * @param obj2 The second object to compare.
+     * @returns A {type: string, value: object} object with all changes.
+     */
+    map(obj1: any, obj2: any): object {
+      if (this.isFunction(obj1) || this.isFunction(obj2)) {
+        throw new Error("Invalid argument. Function given, object expected.");
+      }
+      // console.log('skky.deepDiff:', this.isValue(obj1), this.isValue(obj2), ', obj1:', obj1, ', obj2:', obj2);
+      if (this.isValue(obj1) || this.isValue(obj2)) {
+        return {
+          type: this.compareValues(obj1, obj2),
+          data: obj1 === undefined ? obj2 : obj1,
+        };
+      }
+
+      const diff = {};
+      for (const key in obj1) {
+        if (this.isFunction(obj1[key])) {
+          continue;
+        }
+
+        let value2;
+        if (obj2[key] !== undefined) {
+          value2 = obj2[key];
+        }
+
+        (diff as any)[key] = this.map(obj1[key], value2);
+      }
+
+      for (const key in obj2) {
+        if (this.isFunction(obj2[key]) || (diff as any)[key] !== undefined) {
+          continue;
+        }
+
+        (diff as any)[key] = this.map(undefined, obj2[key]);
+      }
+
+      return diff;
+    },
+    /**
+     * Returns a comparison string defining the type of change, or unchanged.
+     * @param value1 The first value to compare.
+     * @param value2 The second value to compare.
+     * @returns A this.VALUE_xxx string describing the change or unchanged.
+     */
+    compareValues(value1: any, value2: any): string {
+      if (value1 === value2) {
+        return this.VALUE_UNCHANGED;
+      }
+
+      if (
+        this.isDate(value1) &&
+        this.isDate(value2) &&
+        value1.getTime() === value2.getTime()
+      ) {
+        return this.VALUE_UNCHANGED;
+      }
+
+      if (value1 === undefined) {
+        return this.VALUE_CREATED;
+      }
+
+      if (value2 === undefined) {
+        return this.VALUE_DELETED;
+      }
+
+      return this.VALUE_UPDATED;
+    },
+    isFunction(x: any): boolean {
+      return Object.prototype.toString.call(x) === "[object Function]";
+    },
+    isArray(x: any): boolean {
+      return Object.prototype.toString.call(x) === "[object Array]";
+    },
+    isDate(x: any): boolean {
+      return Object.prototype.toString.call(x) === "[object Date]";
+    },
+    isObject(x: any): boolean {
+      return Object.prototype.toString.call(x) === "[object Object]";
+    },
+    isValue(x: any): boolean {
+      return !this.isObject(x) && !this.isArray(x);
+    },
+  };
 }
 
 /**
@@ -88,9 +256,7 @@ export function getBody(ret: any): object {
  * @param {StringOrArray} stringOrArray The string or array to flatten.
  * @returns {string} The flattened, comma-separated string.
  */
-export function getCommaSeparatedList(
-  stringOrArray: StringOrArray
-): string {
+export function getCommaSeparatedList(stringOrArray: StringOrArray): string {
   if (!isArray(stringOrArray)) {
     return stringOrArray as string;
   }
@@ -113,7 +279,7 @@ export function getCommaUpperList(stringOrArray: StringOrArray): string {
  * @param url The URL endpoint of the API call.
  * @returns The returned Response object in a Promise.
  */
- export function fetchHttpDelete(url: string): Promise<Response> {
+export function fetchHttpDelete(url: string): Promise<Response> {
   return fetch(url, {
     method: "delete",
   });
@@ -138,7 +304,10 @@ export async function fetchHttpGet(url: string): Promise<object> {
  * @param data The object of the data to pass to the API.
  * @returns The returned JSON object.
  */
-export async function fetchHttpPost(url: string, data: object): Promise<object> {
+export async function fetchHttpPost(
+  url: string,
+  data: object
+): Promise<object> {
   const ret = await fetch(url, {
     method: "POST",
     headers: {
@@ -157,7 +326,7 @@ export async function fetchHttpPost(url: string, data: object): Promise<object> 
  * @param data The object of the data to pass to the API.
  * @returns The returned Response object in a Promise.
  */
- export function fetchHttpPut(url: string, data: object): Promise<Response> {
+export function fetchHttpPut(url: string, data: object): Promise<Response> {
   return fetch(url, {
     method: "put",
     headers: {
@@ -178,6 +347,25 @@ export function newGuid(): string {
       v = c == "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
+}
+
+/**
+ * Returns the mantissa as a whole number.
+ * @param num The decimal number to get the mantissa for.
+ * @returns The whole number value of the mantissa.
+ */
+export function getMantissa(num: number): number {
+  if (!num) {
+    return 0;
+  }
+
+  const str = "" + num;
+  const arr = str.split(".");
+  if ((isArray(arr), 2 && hasData(arr[1]))) {
+    return +arr[1];
+  }
+
+  return 0;
 }
 
 /**
@@ -210,7 +398,7 @@ export function getNumberFormatted(
  * @param minDecimalPlaces The minimum number of required decimal places to show.
  * @returns A string of the passed in num with the given decimal places.
  */
- export function getNumberString(
+export function getNumberString(
   num: any,
   maxDecimalPlaces: number,
   minDecimalPlaces: number
@@ -252,10 +440,24 @@ export function getObject(arr: any[], index = 0) {
 }
 
 /**
+ * Gets from the object the value from the key that matches find string.
+ * @param obj The object to search for the key.
+ * @param keyToFind The property to look for in the object.
+ * @returns The value from the obj[keyToFind]. undefined if not found.
+ */
+export function getObjectValue(obj: any, keyToFind: string): any {
+  if ((Object.keys(obj) || []).find((x) => x === keyToFind)) {
+    return obj[keyToFind];
+  }
+
+  return undefined;
+}
+
+/**
  * Gets the percentage change from two numbers.
  * Can be negative if there is a drop from the previous to the current number.
  * @param prev The previous number.
- * @param cur The new current number. 
+ * @param cur The new current number.
  * @returns The percentage number from -100 to 100.
  */
 export function getPercentChange(prev: number, cur: number): number {
@@ -282,7 +484,7 @@ export function getPercentChange(prev: number, cur: number): number {
  * @param decimalPlaces The number of decimal places to show. Defaults to 2.
  * @returns The percentage number from -100 to 100.
  */
- export function getPercentChangeString(
+export function getPercentChangeString(
   prev: number,
   cur: number,
   showPercent = true,
@@ -337,7 +539,7 @@ export function hasData(o: any, minlength = 1): boolean {
 
     return isArray(Object.keys(o), minlength);
   } catch (ex) {
-    console.log("hasData", ex);
+    console.log("grayarrow-jsutils.hasData", ex);
   }
 
   return false;
@@ -350,10 +552,7 @@ export function hasData(o: any, minlength = 1): boolean {
  * @param minLengthOrIncludes If a number, specifies the minimum number of items to be in the array. If not a number, the array must include the item.
  * @returns True if arr is an array and meets any minimum requirements.
  */
-export function isArray(
-  arr: any,
-  minLengthOrIncludes: any = null
-): boolean {
+export function isArray(arr: any, minLengthOrIncludes: any = null): boolean {
   if (!arr || !Array.isArray(arr)) {
     return false;
   }
@@ -386,12 +585,34 @@ export function isEmptyObject(obj: any): boolean {
       obj.constructor === Object)
   );
 }
+
+/**
+ * Checks a variable to see if it is empty.
+ * If it is a string, then checks for "".
+ * @param s A variable to test if it is a string and is empty.
+ * @param allowFunction True if s is a function and you want to call the function to get s.
+ * @returns True if the object s is an empty string.
+ */
+export function isEmptyString(s: any, allowFunction = true): boolean {
+  try {
+    const testString = (str: any) => {
+      return !str || (isString(str) && "" === str);
+    };
+
+    return testString(s) || (allowFunction && isFunction(s) && testString(s()));
+  } catch (ex) {
+    console.log("grayarrow-jsutils.isEmptyString:", ex);
+  }
+
+  return true;
+}
+
 /**
  * Tests an object to determine if it is a function.
  * @param obj Any object to test if it is a function.
  * @returns True if the object is a function.
  */
- export function isFunction(obj: any): boolean {
+export function isFunction(obj: any): boolean {
   return "function" === typeof obj;
 }
 
@@ -464,7 +685,6 @@ export function isObject(
   return true;
 }
 
-
 /**
  * Tests an object to determine if it is a string.
  * Additionally, will test if the string if it has a minimum length.
@@ -472,7 +692,7 @@ export function isObject(
  * @param minlength The minimum length the string must be.
  * @returns True if the object is a string and meets an optional minimum length if provided.
  */
- export function isString(obj: any, minlength = 0): boolean {
+export function isString(obj: any, minlength = 0): boolean {
   return (
     ("string" === typeof obj || (obj && obj instanceof String)) &&
     obj.length >= minlength
@@ -508,7 +728,7 @@ export function safestr(s: string, ifNull = ""): string {
  * @param s A string to set to lowercase. If null or undefined, empty string is returned.
  * @returns A guaranteed string to be nonnull and lowercase.
  */
- export function safestrLowercase(s: string): string {
+export function safestrLowercase(s: string): string {
   return safestr(s).toLowerCase();
 }
 /**
@@ -516,7 +736,7 @@ export function safestr(s: string, ifNull = ""): string {
  * @param s A string to set to uppercase. If null or undefined, empty string is returned.
  * @returns A guaranteed string to be nonnull and uppercase.
  */
- export function safestrUppercase(s: string): string {
+export function safestrUppercase(s: string): string {
   return safestr(s).toUpperCase();
 }
 
@@ -536,6 +756,19 @@ export function pluralSuffix(isPlural: number, suffix = "s"): string {
   }
 
   return "";
+}
+
+/**
+ * Returns the prefix for a number if it positive + or negative -.
+ * @param num The number to check for negative or positive.
+ * @returns Empty string is num is 0, + if positive, or - if negative.
+ */
+export function plusMinus(num: number): string {
+  if (!num) {
+    return "";
+  }
+
+  return num > 0 ? "+" : "-";
 }
 
 /**
@@ -582,7 +815,7 @@ export function renameProperty(obj: any, oldKey: any, newKey: any): object {
 /**
  * Runs a given function on all members of an object.
  * @param obj The object to run func() on all members.
- * @param func A function that receives each string property key and its value 
+ * @param func A function that receives each string property key and its value
  * @param mustHaveValue If true, the property must have a value in order for func() to be called.
  * @returns The original object with function having been run on each property.
  */
@@ -723,10 +956,94 @@ export function splitToArrayOrStringIfOnlyOneToUpper(
 }
 
 /**
+ * Creates a string with a name=value. Optional wrapping of the value is provided.
+ * @param name The name.
+ * @param value The value to set the name.
+ * @param valueWrapper An optional wrapper around the value. Usually a quote or double quote.
+ * @returns The name=value string.
+ */
+export function stringEquals(
+  name: string,
+  value: string,
+  valueWrapper = ""
+): string {
+  if (hasData(name)) {
+    return (
+      name +
+      "=" +
+      (hasData(valueWrapper)
+        ? stringWrap(valueWrapper, value, valueWrapper)
+        : safestr(value))
+    );
+  }
+
+  return "";
+}
+/**
+ * Creates a string with a name='value' or name="value" depending on useSingleQuote.
+ * @param name The name.
+ * @param value The value to set the name.
+ * @param useSingleQuote True if you want to use a single quote, otherwise a double quote is used.
+ * @returns The name="value" or name='value' string.
+ */
+export function stringEqualsQuoted(
+  name: string,
+  value: string,
+  useSingleQuote = true
+): string {
+  if (hasData(name)) {
+    return (
+      name +
+      "=" +
+      (useSingleQuote || false
+        ? stringWrapSingleQuote(value)
+        : stringWrapDoubleQuote(value))
+    );
+  }
+
+  return "";
+}
+
+/**
+ * Wraps a given string str with a prefix and suffix.
+ * @param left The prefix to put in front of the str.
+ * @param str The string to be wrapped.
+ * @param right The suffix to put after str.
+ * @returns A string of left + str + right. Guaranteed to be a safe string.
+ */
+export function stringWrap(left: string, str: string, right: string): string {
+  return safestr(left) + safestr(str) + safestr(right);
+}
+/**
+ * Creates a string as "str".
+ * @param str The string to wrap in double quotes.
+ * @returns The "str" wrapped string.
+ */
+export function stringWrapDoubleQuote(str: string): string {
+  return stringWrap('"', str, '"');
+}
+/**
+ * Creates a string as (str) wrapped in parentheses.
+ * @param str The string to wrap in parentheses.
+ * @returns The (str) wrapped string.
+ */
+export function stringWrapParen(str: string): string {
+  return stringWrap("(", str, ")");
+}
+/**
+ * Creates a string as 'str'.
+ * @param str The string to wrap in single quotes.
+ * @returns The 'str' wrapped string.
+ */
+export function stringWrapSingleQuote(str: string): string {
+  return stringWrap("'", str, "'");
+}
+
+/**
  * Returns the number of milliseconds between two times.
  * @param startTime The time to begin the diff with.
  * @param endTime The ending time for the diff. If none provided, the current time is used.
- * @returns The absolute value of milliseconds difference between the two times. 
+ * @returns The absolute value of milliseconds difference between the two times.
  */
 export function timeDifference(startTime: Date, endTime: Date | null): number {
   const fname = "timeDifference: ";
@@ -807,4 +1124,21 @@ export function timeDifferenceString(
   }
 
   return safestr(s, longFormat ? "0 seconds" : "0s");
+}
+
+/**
+ * Takes a number and converts to its uppercase hexadecimal string value.
+ * @param decimal The number to convert to hexadecimal.
+ * @param chars Number of chars to pad for leading zeros.
+ * @returns
+ */
+export function toHex(decimal: number, chars = 2): string {
+  if (isNullOrUndefined(chars)) {
+    chars = 2;
+  }
+
+  return ((decimal || 0) + Math.pow(16, chars))
+    .toString(16)
+    .slice(-chars)
+    .toUpperCase();
 }
