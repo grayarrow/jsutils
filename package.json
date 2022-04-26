@@ -1,7 +1,7 @@
 {
   "name": "grayarrow-jsutils",
-  "version": "1.0.1",
-  "description": "Provides basic helper utilities for supporting and JavaScript code.",
+  "version": "1.0.2",
+  "description": "Provides basic helper utilities for supporting JavaScript code.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

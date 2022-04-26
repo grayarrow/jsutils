@@ -1,13 +1,27 @@
-// const fetch = require('node-fetch')
+type StringOrArray = string | string[];
 
-export function arrFirst(arr: any, defaultIfNone: any = null): any {
-  if (isArray(arr, 1)) {
-    return arr[0];
+/**
+ * Gets the first item from an array, or a default value if the array is empty. Null is returned if no default value provided.
+ * Good for quick tests of objects to see if it is an array, and getting the first value.
+ * @param obj The array to get the first value from, if it is an array.
+ * @param defaultIfNone An optional default value if the array is empty.
+ * @returns The first item in the array, or null or defaultIfNone if the array has no values.
+ */
+export function arrFirst(obj: any, defaultIfNone: any = null): any {
+  if (isArray(obj, 1)) {
+    return obj[0];
   }
 
   return defaultIfNone;
 }
 
+/**
+ * Compares two objects and returns a value for used in the JavaScript sort() method.
+ * @param a The first object to compare with.
+ * @param b The second object to compare with.
+ * @param isAsc True if you want to sort ascending.
+ * @returns -1, 0 or 1 depending on the sort direction.
+ */
 export function compare(
   a: object,
   b: object,
@@ -43,7 +57,7 @@ export function compare(
 /**
  * Looks for a ret.body object to return.
  * Throws an Error if the body is not found or not an object.
- * @param {object} ret The object to get the ret.body object.
+ * @param {any} ret The object to get the ret.body object.
  * @returns {object} The existing ret.body object of the ret object..
  */
 export function getBody(ret: any): object {
@@ -56,11 +70,11 @@ export function getBody(ret: any): object {
 
 /**
  * Gets a comma separated list of unique items.
- * @param {string | Array<string>} stringOrArray The string or array to flatten.
+ * @param {StringOrArray} stringOrArray The string or array to flatten.
  * @returns {string} The flattened, comma-separated string.
  */
 export function getCommaSeparatedList(
-  stringOrArray: string | string[]
+  stringOrArray: StringOrArray
 ): string {
   if (!isArray(stringOrArray)) {
     return stringOrArray as string;
@@ -72,24 +86,44 @@ export function getCommaSeparatedList(
 
 /**
  * Gets a comma separated list of unique items in uppercase.
- * @param {string | Array<string>} stringOrArray The string or array to flatten.
- * @returns {string} The flattened, comma-separated string in uppercase.
+ * @param stringOrArray The string or array to flatten.
+ * @returns The flattened, comma-separated string in uppercase.
  */
-export function getCommaUpperList(stringOrArray: string | string[]): string {
+export function getCommaUpperList(stringOrArray: StringOrArray): string {
   return safestrUppercase(getCommaSeparatedList(stringOrArray));
 }
 
-export function fetchHttpDelete(url: string): Promise<Response> {
+/**
+ * DELETEs data to an API using an HTTP DELETE.
+ * @param url The URL endpoint of the API call.
+ * @returns The returned Response object in a Promise.
+ */
+ export function fetchHttpDelete(url: string): Promise<Response> {
   return fetch(url, {
     method: "delete",
   });
 }
-export async function fetchHttpGet(url: string): Promise<any> {
+
+/**
+ * Fetches data from an API using an HTTP GET.
+ * Returns the JSON data from the API call.
+ * @param url The URL endpoint of the API call.
+ * @returns The returned JSON object.
+ */
+export async function fetchHttpGet(url: string): Promise<object> {
   const ret = await fetch(url);
 
   return await ret.json();
 }
-export async function fetchHttpPost(url: string, data: object): Promise<any> {
+
+/**
+ * Fetches data from an API using an HTTP POST.
+ * Returns the JSON data from the API call.
+ * @param url The URL endpoint of the API call.
+ * @param data The object of the data to pass to the API.
+ * @returns The returned JSON object.
+ */
+export async function fetchHttpPost(url: string, data: object): Promise<object> {
   const ret = await fetch(url, {
     method: "POST",
     headers: {
@@ -101,7 +135,14 @@ export async function fetchHttpPost(url: string, data: object): Promise<any> {
 
   return await ret.json();
 }
-export function fetchHttpPut(url: string, data: object): Promise<Response> {
+
+/**
+ * PUTs data to an API using an HTTP POST.
+ * @param url The URL endpoint of the API call.
+ * @param data The object of the data to pass to the API.
+ * @returns The returned Response object in a Promise.
+ */
+ export function fetchHttpPut(url: string, data: object): Promise<Response> {
   return fetch(url, {
     method: "put",
     headers: {
@@ -112,6 +153,10 @@ export function fetchHttpPut(url: string, data: object): Promise<Response> {
   });
 }
 
+/**
+ * Returns a new global unique identifier (GUID).
+ * @returns A global unique identifier as a 16 character string.
+ */
 export function newGuid(): string {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
@@ -120,6 +165,13 @@ export function newGuid(): string {
   });
 }
 
+/**
+ * Gets a formatted number based on a specified number of decimal places.
+ * @param num A number or string representing a number.
+ * @param maxDecimalPlaces The maximum number of decimal places to show.
+ * @param minDecimalPlaces The minimum number of required decimal places to show.
+ * @returns A number with the given decimal places.
+ */
 export function getNumberFormatted(
   num: any,
   maxDecimalPlaces: number,
@@ -136,7 +188,14 @@ export function getNumberFormatted(
   return num;
 }
 
-export function getNumberString(
+/**
+ * Gets a formatted number based on a specified number of decimal places.
+ * @param num A number or string representing a number.
+ * @param maxDecimalPlaces The maximum number of decimal places to show.
+ * @param minDecimalPlaces The minimum number of required decimal places to show.
+ * @returns A string of the passed in num with the given decimal places.
+ */
+ export function getNumberString(
   num: any,
   maxDecimalPlaces: number,
   minDecimalPlaces: number
@@ -154,22 +213,36 @@ export function getNumberString(
   }).format(num);
 }
 
-export function getObject(o: any[], index = 0) {
-  if (!isNullOrUndefined(o)) {
+/**
+ * Gets an object from an array at the given index.
+ * Protects from empty objects and indexes that are out of bounds.
+ * @param arr An object array to get the index item of.
+ * @param index The index of the object array to return
+ * @returns The given object at arr[index], or null if it does not exist.
+ */
+export function getObject(arr: any[], index = 0) {
+  if (!isNullOrUndefined(arr)) {
     index = index || 0;
 
-    if (isArray(o)) {
-      if (o.length > index) {
-        return o[index];
+    if (isArray(arr)) {
+      if (arr.length > index) {
+        return arr[index];
       }
     } else if (index === 0) {
-      return o;
+      return arr;
     }
   }
 
   return null;
 }
 
+/**
+ * Gets the percentage change from two numbers.
+ * Can be negative if there is a drop from the previous to the current number.
+ * @param prev The previous number.
+ * @param cur The new current number. 
+ * @returns The percentage number from -100 to 100.
+ */
 export function getPercentChange(prev: number, cur: number): number {
   let percent = 0;
   if (cur) {
@@ -185,8 +258,16 @@ export function getPercentChange(prev: number, cur: number): number {
   return percent;
 }
 
-// Works for positive numbers only.
-export function getPercentChangeString(
+/**
+ * Gets the percentage change from two numbers as a string with the % sign appended if desired.
+ * Can be negative if there is a drop from the previous to the current number.
+ * @param prev The previous number.
+ * @param cur The new current number.
+ * @param showPercent Set to true if you want the % sign appended.
+ * @param decimalPlaces The number of decimal places to show. Defaults to 2.
+ * @returns The percentage number from -100 to 100.
+ */
+ export function getPercentChangeString(
   prev: number,
   cur: number,
   showPercent = true,
@@ -203,6 +284,14 @@ export function getPercentChangeString(
   return (percent > 0 ? "+" : "") + ret;
 }
 
+/**
+ * Checks any object, string or array if it has any data.
+ * The minlength is for requiring more items to be in the object, string or array.
+ * You can pass in a function that must return an object, string or array to be tested as well.
+ * @param o Any object, string or array. If it is a function, the function will be called to get the object, string or array before testing.
+ * @param minlength The required minimum length to consider to have data.
+ * @returns True if the object meets the minimum length requirements.
+ */
 export function hasData(o: any, minlength = 1): boolean {
   // console.log('minlength: ' + minlength + ', o: ' + o)
   try {
@@ -239,9 +328,16 @@ export function hasData(o: any, minlength = 1): boolean {
   return false;
 }
 
+/**
+ * Checks an object if it is an array. If so, then tests if there is an optional minimum number of items.
+ * If minLengthOrIncludes is not a number, checks that the array includes the item.
+ * @param arr Any object to test if it is an array.
+ * @param minLengthOrIncludes If a number, specifies the minimum number of items to be in the array. If not a number, the array must include the item.
+ * @returns True if arr is an array and meets any minimum requirements.
+ */
 export function isArray(
   arr: any,
-  minLengthOrIncludes: number | null = null
+  minLengthOrIncludes: any = null
 ): boolean {
   if (!arr || !Array.isArray(arr)) {
     return false;
@@ -258,8 +354,13 @@ export function isArray(
   return arr.includes(minLengthOrIncludes);
 }
 
-export function isBoolean(o: any): boolean {
-  return "boolean" === typeof o;
+/**
+ * Tests an object to determine if it is a type boolean.
+ * @param obj Any object to test if it is a boolean value.
+ * @returns True if the object is a boolean.
+ */
+export function isBoolean(obj: any): boolean {
+  return "boolean" === typeof obj;
 }
 
 export function isEmptyObject(obj: any): boolean {
@@ -270,9 +371,23 @@ export function isEmptyObject(obj: any): boolean {
       obj.constructor === Object)
   );
 }
-export function isFunction(obj: any): boolean {
+/**
+ * Tests an object to determine if it is a function.
+ * @param obj Any object to test if it is a function.
+ * @returns True if the object is a function.
+ */
+ export function isFunction(obj: any): boolean {
   return "function" === typeof obj;
 }
+
+/**
+ * Tests an object to determine if it is a number.
+ * Additionally, will test if the number is greater than or equal to a minimum value and/or less than or equal to a maximum value.
+ * @param obj Any object to test if it is a number.
+ * @param minValue The minimum value the number must be.
+ * @param maxValue The maximum value the number can be.
+ * @returns True if the object is a number and if provided, >= to the minValue and/or <= to the maxValue.
+ */
 export function isNumber(
   obj: any,
   minValue: number | null = null,
@@ -292,10 +407,22 @@ export function isNumber(
   return true;
 }
 
+/**
+ * Tests if a variable is null or undefined.
+ * @param obj Any variable to test if it is null or undefined.
+ * @returns True if the object passed in is null or undefined.
+ */
 export function isNullOrUndefined(obj: any): boolean {
   return "undefined" === typeof obj || null == obj;
 }
 
+/**
+ * Checks if the variable passed in is a JavaScript object that is not an array.
+ * Optionally can test for a minimum number of member objects, or if a member of the object is a named by the minLengthOrContainsField parameter.
+ * @param obj The object to test if it is indeed a JavaScript object.
+ * @param minLengthOrContainsField The minimum number of items that must be in the object. Or if a string, the object must contain a member named the string provided.
+ * @returns True if the obj variable is a JavaScript object, and meets an optional minimum length or contains a member with the given name.
+ */
 export function isObject(
   obj: any,
   minLengthOrContainsField: number | string = 0
@@ -306,6 +433,10 @@ export function isObject(
   }
 
   if (isNumber(minLengthOrContainsField)) {
+    if (minLengthOrContainsField <= 0) {
+      return true;
+    }
+
     return (Object.keys(obj) || []).length >= minLengthOrContainsField;
   }
 
@@ -318,17 +449,37 @@ export function isObject(
   return true;
 }
 
-export function isString(s: any, minlength = 0): boolean {
+
+/**
+ * Tests an object to determine if it is a string.
+ * Additionally, will test if the string if it has a minimum length.
+ * @param obj Any object to test if it is a string.
+ * @param minlength The minimum length the string must be.
+ * @returns True if the object is a string and meets an optional minimum length if provided.
+ */
+ export function isString(obj: any, minlength = 0): boolean {
   return (
-    ("string" === typeof s || (s && s instanceof String)) &&
-    s.length >= minlength
+    ("string" === typeof obj || (obj && obj instanceof String)) &&
+    obj.length >= minlength
   );
 }
 
+/**
+ * Tests an object to see if it is empty. If so returns null, otherwise just returns the object.
+ * @param obj The object to test if it is empty.
+ * @returns Null if the object is empty, otherwise the object is returned.
+ */
 export function getNullObject(obj: any): any {
   return isEmptyObject(obj) ? null : obj;
 }
 
+/**
+ * Tests if a string has data (is not undefined, null or empty string).
+ * If the string is empty, the ifNull value is returned.
+ * @param s A string to check for data.
+ * @param ifNull If the string is null, return this value. Defaults to "".
+ * @returns A guaranteed string to be nonnull. Returns ifNull if the string does not have data.
+ */
 export function safestr(s: string, ifNull = ""): string {
   if (hasData(s)) {
     return s;
@@ -337,13 +488,29 @@ export function safestr(s: string, ifNull = ""): string {
   return hasData(ifNull) ? ifNull : "";
 }
 
-export function safestrLowercase(s: string): string {
+/**
+ * Returns a guaranteed valid string to be lowercase.
+ * @param s A string to set to lowercase. If null or undefined, empty string is returned.
+ * @returns A guaranteed string to be nonnull and lowercase.
+ */
+ export function safestrLowercase(s: string): string {
   return safestr(s).toLowerCase();
 }
-export function safestrUppercase(s: string): string {
+/**
+ * Returns a guaranteed valid string to be uppercase.
+ * @param s A string to set to uppercase. If null or undefined, empty string is returned.
+ * @returns A guaranteed string to be nonnull and uppercase.
+ */
+ export function safestrUppercase(s: string): string {
   return safestr(s).toUpperCase();
 }
 
+/**
+ * Returns an s if the number passed in should be pluralized.
+ * @param isPlural A number that is used to determine if the plural suffix is added.
+ * @param suffix The suffix to add if the number should be pluralized.
+ * @returns The suffix string if the number is not 1.
+ */
 export function pluralSuffix(isPlural: number, suffix = "s"): string {
   if (isNumber(isPlural) && 1 === isPlural) {
     isPlural = 0;
@@ -356,10 +523,24 @@ export function pluralSuffix(isPlural: number, suffix = "s"): string {
   return "";
 }
 
+/**
+ * Returns the prefix if the given string s has a value (not empty).
+ * Generally used in loops so that the prefix is not prepended on the first pass.
+ * @param s A string to prefix with a value if the string has data.
+ * @param prefix The prefix if the string is not empty.
+ * @returns The prefix if the string is not empty.
+ */
 export function prefixIfHasData(s: string, prefix = ", "): string {
   return hasData(s) ? safestr(prefix) : "";
 }
 
+/**
+ * Renames a property of an object with a new key name.
+ * @param obj The object to rename the key.
+ * @param oldKey The original key to rename.
+ * @param newKey The new name of the key.
+ * @returns The original object with the renamed key.
+ */
 export function renameProperty(obj: any, oldKey: any, newKey: any): object {
   if (
     !isObject(obj) ||
@@ -383,6 +564,13 @@ export function renameProperty(obj: any, oldKey: any, newKey: any): object {
   return obj;
 }
 
+/**
+ * Runs a given function on all members of an object.
+ * @param obj The object to run func() on all members.
+ * @param func A function that receives each string property key and its value 
+ * @param mustHaveValue If true, the property must have a value in order for func() to be called.
+ * @returns The original object with function having been run on each property.
+ */
 export function runOnAllMembers(
   obj: object,
   func: (key: string, value: any) => any,
@@ -407,29 +595,33 @@ export function runOnAllMembers(
 
 /**
  * Searches the object looking for the first array it finds.
+ * If the object passed in is already an array, it is returned.
  * @param {object} obj The object to look for the array.
- * @returns {Array} Returns the first Array found in the object. [] if none found.
+ * @returns {any[]} Returns obj if it is an array, or if obj is an object, the first array found is returned. [] if none found.
  */
 export function searchObjectForArray(obj: any): any[] {
   if (isArray(obj)) {
     return obj;
   }
 
-  let arr: any[] = [];
   if (isObject(obj)) {
-    Object.values(obj).forEach((x) => {
-      if (isArray(x)) {
-        arr = x as any[];
-        return x;
-      }
-    });
+    return Object.values(obj).find((x) => isArray(x)) as any[];
   }
 
-  return arr;
+  return [];
 }
 
+/**
+ * Takes a string or array of strings, iterates over each string and splits them according to the splitter provided.
+ * Each split string is then added to an array and the array of split strings is returned.
+ * @param strOrArray A string or string array to push all items split with the splitter provided.
+ * @param splitter A string of what to split every string by.
+ * @param removeEmpties If true, remove all empty strings.
+ * @param trimStrings True if you want to remove any surrounding spaces on every string.
+ * @returns An array of every string split by splitter.
+ */
 export function splitToArray(
-  strOrArray: string | string[],
+  strOrArray: StringOrArray,
   splitter = ",",
   removeEmpties = true,
   trimStrings = true
@@ -458,12 +650,21 @@ export function splitToArray(
   return splitted;
 }
 
+/**
+ * Calls splitToArray and if only one string is the array is returned, just that string is returned.
+ * Otherwise the array returned from splitToArray is returned intact.
+ * @param strOrArray A string or string array to push all items split with the splitter provided.
+ * @param splitter A string of what to split every string by.
+ * @param removeEmpties If true, remove all empty strings.
+ * @param trimStrings True if you want to remove any surrounding spaces on every string.
+ * @returns An array of every string split by splitter, of if only 1 string is the result of splitToArray, the string itself is returned.
+ */
 export function splitToArrayOrStringIfOnlyOne(
-  strOrArray: string | string[],
+  strOrArray: StringOrArray,
   splitter = ",",
   removeEmpties = true,
   trimStrings = true
-): string | string[] {
+): StringOrArray {
   const arr = splitToArray(strOrArray, splitter, removeEmpties, trimStrings);
 
   if (isArray(arr, 2)) {
@@ -477,12 +678,21 @@ export function splitToArrayOrStringIfOnlyOne(
   return "";
 }
 
+/**
+ * Calls splitToArray and if only one string is the array is returned, just that string is returned uppercase.
+ * Otherwise the array returned from splitToArray is returned with each string uppercased.
+ * @param strOrArray A string or string array to push all items split with the splitter provided.
+ * @param splitter A string of what to split every string by.
+ * @param removeEmpties If true, remove all empty strings.
+ * @param trimStrings True if you want to remove any surrounding spaces on every string.
+ * @returns An array of every string split by splitter, of if only 1 string is the result of splitToArray with every string uppercased, the string itself is returned uppercase.
+ */
 export function splitToArrayOrStringIfOnlyOneToUpper(
-  strOrArray: string | string[],
+  strOrArray: StringOrArray,
   splitter = ",",
   removeEmpties = true,
   trimStrings = true
-): string | string[] {
+): StringOrArray {
   const arr = splitToArrayOrStringIfOnlyOne(
     strOrArray,
     splitter,
@@ -497,6 +707,12 @@ export function splitToArrayOrStringIfOnlyOneToUpper(
   return safestrUppercase(arr as string);
 }
 
+/**
+ * Returns the number of milliseconds between two times.
+ * @param startTime The time to begin the diff with.
+ * @param endTime The ending time for the diff. If none provided, the current time is used.
+ * @returns The absolute value of milliseconds difference between the two times. 
+ */
 export function timeDifference(startTime: Date, endTime: Date | null): number {
   const fname = "timeDifference: ";
   if (!startTime) {
@@ -509,12 +725,27 @@ export function timeDifference(startTime: Date, endTime: Date | null): number {
 
   return Math.abs(endTime.getTime() - startTime.getTime());
 }
+/**
+ * Returns the number of seconds between two times.
+ * @param startTime The time to begin the diff with.
+ * @param endTime The ending time for the diff. If none provided, the current time is used.
+ * @returns The absolute value of seconds difference between the two times rounded down (even if milliseconds is > 500)
+ */
 export function timeDifferenceInSeconds(
   startTime: Date,
   endTime: Date | null
 ): number {
   return Math.floor(timeDifference(startTime, endTime) / 1000);
 }
+/**
+ * Returns the number of seconds or optionally milliseconds, between two times as a string representation.
+ * i.e., 5 days 21 hours 59 minutes 35 seconds 889ms, or 5d 21h 59m 35s 889ms. Used mostly for log messages.
+ * @param startTime The time to begin the diff with.
+ * @param endTime The ending time for the diff. If none provided, the current time is used.
+ * @param longFormat True if you want day, hour, minute, and second to be spelled out. False if you want the dhms abbreviations only.
+ * @param showMilliseconds True if you want the milliseconds included in the time difference.
+ * @returns The absolute value of seconds or milliseconds difference between the two times as a string.
+ */
 export function timeDifferenceString(
   startTime: Date,
   endTime: Date | null,
