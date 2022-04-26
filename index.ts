@@ -47,7 +47,7 @@ export function compareSortOrder(
   a: any,
   b: any,
   isAsc: string | boolean = true
-): Number {
+): number {
   if (isNullOrUndefined(isAsc)) {
     isAsc = true;
   } else if (isString(isAsc as any)) {
