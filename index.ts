@@ -12,7 +12,7 @@ export function addObjectToList(listObjects: any[], obj: any[]): any {
     return;
   }
 
-  listObjects = listObjects || [];
+  listObjects = safeArray(listObjects);
 
   for (let i = 0; getObject(obj, i); ++i) {
     listObjects.push(getObject(obj, i));
@@ -296,26 +296,88 @@ export function getCommaUpperList(stringOrArray: StringOrArray): string {
 }
 
 /**
+ * An HTTP header to support JSON API calls. An optional Bearer token can be provided as well.
+ * @param bearerToken An optional security token to add as Authorization to the HTTP header.
+ * @returns A JSON ready header for HTTP calls.
+ */
+export function fetchHttpHeaderJson(bearerToken?: string): string[][] {
+  const header = [["Content-Type", "application/json"]];
+
+  if (hasData(bearerToken)) {
+    header.push(["Authorization", `Bearer ${bearerToken}`]);
+  }
+
+  return header;
+}
+
+/**
+ * Handles in a prescribed way throwing an exception if the API call fails.
+ * If the call is successful, returns the responding JSON.
+ * @param method The HTTP method used for the call.
+ * @param fname The function name of the caller.
+ * @param res The HTTP Response object returned from fetch.
+ * @returns The JSON object from the Response.
+ */
+export function fetchHttpJsonResponseHandler(
+  method: string,
+  fname: string,
+  res: Response
+): Promise<any> {
+  if (!res.ok) {
+    console.log(
+      fname + ":",
+      "Error in HTTP",
+      method,
+      "to URL:",
+      res.url,
+      "with status code",
+      res.status,
+      "."
+    );
+
+    throw new Error(
+      `${fname}: Error in HTTP ${method} to URL: ${res.url} with status code ${res.status}.`
+    );
+  }
+
+  return res.json();
+}
+
+/**
  * DELETEs data to an API using an HTTP DELETE.
  * @param url The URL endpoint of the API call.
+ * @param bearerToken An optional security token to add as Authorization to the HTTP header.
  * @returns The returned Response object in a Promise.
  */
-export function fetchHttpDelete(url: string): Promise<Response> {
+export function fetchHttpDelete(
+  url: string,
+  bearerToken?: string
+): Promise<any> {
+  const fname = "fetchHttpDelete";
+
   return fetch(url, {
-    method: "delete",
-  });
+    method: "DELETE",
+    headers: fetchHttpHeaderJson(bearerToken),
+  }).then((res) => fetchHttpJsonResponseHandler("DELETE", fname, res));
 }
 
 /**
  * Fetches data from an API using an HTTP GET.
  * Returns the JSON data from the API call.
  * @param url The URL endpoint of the API call.
+ * @param bearerToken An optional security token to add as Authorization to the HTTP header.
  * @returns The returned JSON object.
  */
-export async function fetchHttpGet(url: string): Promise<object> {
-  const ret = await fetch(url);
+export function fetchHttpGet(
+  url: string,
+  bearerToken?: string
+): Promise<any> {
+  const fname = "fetchHttpGet";
 
-  return await ret.json();
+  return fetch(url, {
+    method: "GET",
+    headers: fetchHttpHeaderJson(bearerToken),
+  }).then((res) => fetchHttpJsonResponseHandler("GET", fname, res));
 }
 
 /**
@@ -323,39 +385,42 @@ export async function fetchHttpGet(url: string): Promise<object> {
  * Returns the JSON data from the API call.
  * @param url The URL endpoint of the API call.
  * @param data The object of the data to pass to the API.
+ * @param bearerToken An optional security token to add as Authorization to the HTTP header.
  * @returns The returned JSON object.
  */
-export async function fetchHttpPost(
+export function fetchHttpPost(
   url: string,
-  data: object
+  data: object,
+  bearerToken?: string
 ): Promise<object> {
-  const ret = await fetch(url, {
-    method: "POST",
-    headers: {
-      // 'Accept': 'application/json',
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  const fname = "fetchHttpPost";
 
-  return await ret.json();
+  return fetch(url, {
+    method: "POST",
+    headers: fetchHttpHeaderJson(bearerToken),
+    body: JSON.stringify(data),
+  }).then((res) => fetchHttpJsonResponseHandler("POST", fname, res));
 }
 
 /**
  * PUTs data to an API using an HTTP POST.
  * @param url The URL endpoint of the API call.
  * @param data The object of the data to pass to the API.
+ * @param bearerToken An optional security token to add as Authorization to the HTTP header.
  * @returns The returned Response object in a Promise.
  */
-export function fetchHttpPut(url: string, data: object): Promise<Response> {
+export function fetchHttpPut(
+  url: string,
+  data: object,
+  bearerToken?: string
+): Promise<any> {
+  const fname = "fetchHttpPut";
+
   return fetch(url, {
-    method: "put",
-    headers: {
-      // 'Accept': 'application/json',
-      "Content-Type": "application/json",
-    },
+    method: "PUT",
+    headers: fetchHttpHeaderJson(bearerToken),
     body: JSON.stringify(data),
-  });
+  }).then((res) => fetchHttpJsonResponseHandler("PUT", fname, res));
 }
 
 /**
@@ -574,7 +639,7 @@ export function hasData(o: any, minlength = 1): boolean {
  * @param minLengthOrIncludes If a number, specifies the minimum number of items to be in the array. If not a number, the array must include the item.
  * @returns True if arr is an array and meets any minimum requirements.
  */
-export function isArray(arr: any, minLengthOrIncludes: any = null): boolean {
+export function isArray(arr: any, minLengthOrIncludes?: any): boolean {
   if (!arr || !Array.isArray(arr)) {
     return false;
   }
@@ -731,6 +796,36 @@ export function getNullObject(obj: any): any {
 }
 
 /**
+ * Tests if the passed in arr is in fact an array that is not undefined or null.
+ * If it is, the ifNull value is used. If there is no ifNull passed in, an empty array is returned.
+ * @param arr An array to test for not being null or undefined.
+ * @param ifNull If the array is null or undefined, return this value. Defaults to [].
+ * @returns A guaranteed array to be nonnull. Returns ifNull if the array does not have data.
+ */
+export function safeArray(arr: any[], ifNull?: any[]): any[] {
+  if (isArray(arr)) {
+    return arr;
+  }
+
+  return isArray(ifNull) ? (ifNull as any[]) : [];
+}
+
+/**
+ * Tests if the passed in obj is in fact an object that is not undefined or null.
+ * If it is, the ifNull value is used. If there is no ifNull passed in, an empty object with no members is returned.
+ * @param obj An object to test for not being null or undefined.
+ * @param ifNull If the object is null or undefined, return this value. Defaults to {}.
+ * @returns A guaranteed object to be nonnull. Returns ifNull if the object does not have data.
+ */
+ export function safeObject(obj: object, ifNull?: object): object {
+  if (isObject(obj)) {
+    return obj;
+  }
+
+  return isObject(ifNull) ? (ifNull as object) : {};
+}
+
+/**
  * Tests if a string has data (is not undefined, null or empty string).
  * If the string is empty, the ifNull value is returned.
  * @param s A string to check for data.
@@ -748,17 +843,37 @@ export function safestr(s: string, ifNull = ""): string {
 /**
  * Returns a guaranteed valid string to be lowercase.
  * @param s A string to set to lowercase. If null or undefined, empty string is returned.
+ * @param trim Optionally trim the string also.
  * @returns A guaranteed string to be nonnull and lowercase.
  */
-export function safestrLowercase(s: string): string {
+export function safestrLowercase(s: string, trim = true): string {
+  if (trim) {
+    s = safestrTrim(s);
+  }
+
   return safestr(s).toLowerCase();
 }
+
+/**
+ * Returns a guaranteed valid string to be trimmed.
+ * @param s A string to set to lowercase. If null or undefined, empty string is returned.
+ * @returns A guaranteed string to be nonnull and trimmed.
+ */
+export function safestrTrim(s: string): string {
+  return safestr(s).trim();
+}
+
 /**
  * Returns a guaranteed valid string to be uppercase.
  * @param s A string to set to uppercase. If null or undefined, empty string is returned.
+ * @param trim Optionally trim the string also.
  * @returns A guaranteed string to be nonnull and uppercase.
  */
-export function safestrUppercase(s: string): string {
+export function safestrUppercase(s: string, trim = true): string {
+  if (trim) {
+    s = safestrTrim(s);
+  }
+
   return safestr(s).toUpperCase();
 }
 
@@ -1163,4 +1278,47 @@ export function toHex(decimal: number, chars = 2): string {
     .toString(16)
     .slice(-chars)
     .toUpperCase();
+}
+
+/**
+ * Joins two strings to make a full URL. This method guards against trailing and leading /'s and always well forms the URL.
+ * If a trailing / is desired, urlJoin checks to ensure there is not already trailing / and variables have not already been added to the URL.
+ * @param baseUrl The URL base path to start the joining by /.
+ * @param relativePath The URL's relative path to be joined.
+ * @param addTrailingSlash Set to true to append a trailing / if this is a pure URL without variables.
+ * @returns A safely constructed URL joined with a /.
+ */
+export function urlJoin(
+  baseUrl: string,
+  relativePath: string,
+  addTrailingSlash = true
+) {
+  let url = safestr(baseUrl);
+  relativePath = safestr(relativePath);
+
+  // Remove any trailing slashes before adding a trailing slash.
+  while (url.length && "/" === url.slice(-1)) {
+    url = url.slice(0, -1);
+  }
+
+  if (!relativePath.startsWith("/")) {
+    url += "/";
+  }
+
+  url += relativePath;
+
+  if (
+    url.includes("?") ||
+    url.includes("&") ||
+    url.includes("#") ||
+    url.includes("=")
+  ) {
+    addTrailingSlash = false;
+  }
+
+  if (addTrailingSlash && !relativePath.endsWith("/")) {
+    url += "/";
+  }
+
+  return url;
 }
