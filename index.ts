@@ -340,44 +340,79 @@ export function fetchHttpJsonResponseHandler(
     );
   }
 
-  return res.json();
+  const contentType = res.headers.get("content-type");
+  return contentType && safestrLowercase(contentType).includes("application/json") ? res.json() : res.text();
+}
+
+/**
+ * Makes an HTTP call to an API using the given HTTP method.
+ * @param url The URL endpoint of the API call.
+ * @param method The HTTP method to be used.
+ * @param body Optional body to send with the request. Can be a JSON object or a string.
+ * @param fname The callers function name for outputting in potential error calls.
+ * @param bearerToken An optional security token to add as Authorization to the HTTP header.
+ * @returns The returned Response object in a Promise.
+ */
+ function fetchHttp(url: string, method: string, body?: any, fname?: string, bearerToken?: string): Promise<any> {
+   const req = {
+    method,
+    headers: fetchHttpHeaderJson(bearerToken),
+  };
+
+  if(hasData(body)) {
+    (req as any).body = isObject(body) ? JSON.stringify(body) : body;
+  }
+
+  fname = safestr(fname as any, `fetch${method}`);
+  return fetch(url, req).then((res) => fetchHttpJsonResponseHandler(method, fname as string, res));
 }
 
 /**
  * DELETEs data to an API using an HTTP DELETE.
  * @param url The URL endpoint of the API call.
  * @param bearerToken An optional security token to add as Authorization to the HTTP header.
+ * @param fname The callers function name for outputting in potential error calls.
  * @returns The returned Response object in a Promise.
  */
 export function fetchHttpDelete(
   url: string,
-  bearerToken?: string
+  fname?: string,
+  bearerToken?: string,
 ): Promise<any> {
-  const fname = "fetchHttpDelete";
-
-  return fetch(url, {
-    method: "DELETE",
-    headers: fetchHttpHeaderJson(bearerToken),
-  }).then((res) => fetchHttpJsonResponseHandler("DELETE", fname, res));
+  return fetchHttp(url, "DELETE", null, fname, bearerToken);
 }
 
 /**
  * Fetches data from an API using an HTTP GET.
  * Returns the JSON data from the API call.
  * @param url The URL endpoint of the API call.
+ * @param fname The callers function name for outputting in potential error calls.
  * @param bearerToken An optional security token to add as Authorization to the HTTP header.
  * @returns The returned JSON object.
  */
 export function fetchHttpGet(
   url: string,
-  bearerToken?: string
+  fname?: string,
+  bearerToken?: string,
 ): Promise<any> {
-  const fname = "fetchHttpGet";
+  return fetchHttp(url, "GET", null, fname, bearerToken);
+}
 
-  return fetch(url, {
-    method: "GET",
-    headers: fetchHttpHeaderJson(bearerToken),
-  }).then((res) => fetchHttpJsonResponseHandler("GET", fname, res));
+/**
+ * PATCHs data to an API using an HTTP POST.
+ * @param url The URL endpoint of the API call.
+ * @param data The object of the data to pass to the API.
+ * @param fname The callers function name for outputting in potential error calls.
+ * @param bearerToken An optional security token to add as Authorization to the HTTP header.
+ * @returns The returned Response object in a Promise.
+ */
+ export function fetchHttpPatch(
+  url: string,
+  data: object,
+  fname?: string,
+  bearerToken?: string,
+): Promise<any> {
+  return fetchHttp(url, "PATCH", data, fname, bearerToken);
 }
 
 /**
@@ -385,42 +420,34 @@ export function fetchHttpGet(
  * Returns the JSON data from the API call.
  * @param url The URL endpoint of the API call.
  * @param data The object of the data to pass to the API.
+ * @param fname The callers function name for outputting in potential error calls.
  * @param bearerToken An optional security token to add as Authorization to the HTTP header.
  * @returns The returned JSON object.
  */
 export function fetchHttpPost(
   url: string,
   data: object,
-  bearerToken?: string
-): Promise<object> {
-  const fname = "fetchHttpPost";
-
-  return fetch(url, {
-    method: "POST",
-    headers: fetchHttpHeaderJson(bearerToken),
-    body: JSON.stringify(data),
-  }).then((res) => fetchHttpJsonResponseHandler("POST", fname, res));
+  fname?: string,
+  bearerToken?: string,
+): Promise<any> {
+  return fetchHttp(url, "POST", data, fname, bearerToken);
 }
 
 /**
  * PUTs data to an API using an HTTP POST.
  * @param url The URL endpoint of the API call.
  * @param data The object of the data to pass to the API.
+ * @param fname The callers function name for outputting in potential error calls.
  * @param bearerToken An optional security token to add as Authorization to the HTTP header.
  * @returns The returned Response object in a Promise.
  */
-export function fetchHttpPut(
+ export function fetchHttpPut(
   url: string,
   data: object,
-  bearerToken?: string
+  fname?: string,
+  bearerToken?: string,
 ): Promise<any> {
-  const fname = "fetchHttpPut";
-
-  return fetch(url, {
-    method: "PUT",
-    headers: fetchHttpHeaderJson(bearerToken),
-    body: JSON.stringify(data),
-  }).then((res) => fetchHttpJsonResponseHandler("PUT", fname, res));
+  return fetchHttp(url, "PUT", data, fname, bearerToken);
 }
 
 /**
@@ -593,7 +620,7 @@ export function getPercentChangeString(
  * The minlength is for requiring more items to be in the object, string or array.
  * You can pass in a function that must return an object, string or array to be tested as well.
  * @param o Any object, string or array. If it is a function, the function will be called to get the object, string or array before testing.
- * @param minlength The required minimum length to consider to have data.
+ * @param minlength The required minimum length to consider to have data. If not supplied, defaults to 1.
  * @returns True if the object meets the minimum length requirements.
  */
 export function hasData(o: any, minlength = 1): boolean {
@@ -832,7 +859,7 @@ export function safeArray(arr: any[], ifNull?: any[]): any[] {
  * @param ifNull If the string is null, return this value. Defaults to "".
  * @returns A guaranteed string to be nonnull. Returns ifNull if the string does not have data.
  */
-export function safestr(s: string, ifNull = ""): string {
+export function safestr(s: string, ifNull = "") {
   if (hasData(s)) {
     return s;
   }
