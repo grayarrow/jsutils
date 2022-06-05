@@ -514,10 +514,10 @@ export function getMantissa(num: number): number {
  * @param num A number or string representing a number.
  * @param maxDecimalPlaces The maximum number of decimal places to show.
  * @param minDecimalPlaces The minimum number of required decimal places to show.
- * @returns A number with the given decimal places.
+ * @returns A number with the given decimal places. Or 0 if num was null or undefined.
  */
 export function getNumberFormatted(
-  num: any,
+  num: any | null | undefined,
   maxDecimalPlaces?: number,
   minDecimalPlaces?: number
 ): number {
@@ -525,11 +525,11 @@ export function getNumberFormatted(
     num = +num
   }
 
-  if (!isNullOrUndefined(num) && isNumber(num)) {
+  if (!isNullOrUndefined(num) && isNumber(num) && (!isNullOrUndefined(maxDecimalPlaces) || !isNullOrUndefined(minDecimalPlaces))) {
     return parseFloat(getNumberString(num, maxDecimalPlaces, minDecimalPlaces))
   }
 
-  return num
+  return num ? num : 0
 }
 
 /**
