@@ -481,7 +481,7 @@ export function getAsNumber(stringOrNumber: string | number | null | undefined):
  * @param stringOrNumber The string or number to return as a number. Or undefined if a null or undefined is passed in.
  * @returns The number representation of the stringOrNumber. If it is a number, just returns the number.
  */
-export function getAsNumberOrUndefined(stringOrNumber: string | number | null | undefined): void | number {
+export function getAsNumberOrUndefined(stringOrNumber: string | number | null | undefined): number | undefined {
   if (!isNullOrUndefined(stringOrNumber)) {
     return getNumberFormatted(stringOrNumber)
   }
