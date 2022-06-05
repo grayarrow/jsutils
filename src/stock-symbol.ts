@@ -141,9 +141,13 @@ export interface IPriceHistory {
   volume: number
 }
 
+export interface IPriceHistoryWithDateTime {
+  datetime: number
+}
+
 export interface ISymbolPrices {
   symbol: string
-  candles: IPlotPricesWithMidpoint[],
+  candles: IPriceHistoryWithDateTime[],
   midprice: number
   requestDate: number
 }
