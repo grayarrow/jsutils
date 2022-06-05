@@ -1,3 +1,5 @@
 export * from './src/skky'
 export * from './src/local-storage'
 export * from './src/session-storage'
+export * from './src/stock-symbol'
+export * from './src/CaptureResponse'
