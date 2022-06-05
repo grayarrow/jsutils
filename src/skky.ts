@@ -467,11 +467,24 @@ export function getMantissa(num: number): number {
 
 /**
  * Returns a number from a string. A number is allowed too in case you don't know if the value is a number already.
- * @param stringOrNumber The string or number to return as a number. 
+ * If a null or undefined value is passed in, 0 is returned.
+ * @param stringOrNumber The string or number to return as a number.
  * @returns The number representation of the stringOrNumber. If it is a number, just returns the number.
  */
 export function getAsNumber(stringOrNumber: string | number | null | undefined): number {
   return getNumberFormatted(stringOrNumber)
+}
+
+/**
+ * Returns a number from a string. A number is allowed too in case you don't know if the value is a number already.
+ * If a null or undefined is passed in, then undefined is returned.
+ * @param stringOrNumber The string or number to return as a number. Or undefined if a null or undefined is passed in.
+ * @returns The number representation of the stringOrNumber. If it is a number, just returns the number.
+ */
+export function getAsNumberOrUndefined(stringOrNumber: string | number | null | undefined): void | number {
+  if (!isNullOrUndefined(stringOrNumber)) {
+    return getNumberFormatted(stringOrNumber)
+  }
 }
 
 /**
