@@ -67,70 +67,6 @@ export function arrayLast(obj: any, defaultIfNone: any = null): any {
 }
 
 /**
- * Compares two objects and returns a value for used in the JavaScript sort() method.
- * @param a The first object to compare with.
- * @param b The second object to compare with.
- * @param isAsc True if you want to sort ascending.
- * @param compareStringsLowercase True if you want to do a lowercase compare on strings.
- * @returns -1, 0 or 1 depending on the sort direction.
- */
-export function compareSortOrder(
-  a: any,
-  b: any,
-  isAsc: string | boolean = true,
-  compareStringsLowercase = true
-): number {
-  if (isNullOrUndefined(isAsc)) {
-    isAsc = true
-  } else if (isString(isAsc as any)) {
-    isAsc = "desc" !== safestrLowercase(isAsc as string)
-  }
-  // equal items sort equally
-  if (a === b) {
-    return 0
-  }
-  // nulls sort after anything else
-  else if (a === null) {
-    return 1
-  } else if (b === null) {
-    return -1
-  }
-  else if (compareStringsLowercase && isString(a) && isString(b)) {
-    return compareStrings(a, b, isAsc, true)
-  }
-  // otherwise, if we're ascending, lowest sorts first
-  else if (isAsc) {
-    return a < b ? -1 : 1
-  }
-  // if descending, highest sorts first
-  else {
-    return a < b ? 1 : -1
-  }
-
-  // return (a < b ? -1 : 1) * (isAsc ? 1 : -1)
-}
-
-/**
- * Compares two strings and returns a value for used in the JavaScript sort() method.
- * @param a The first string to compare with.
- * @param b The second string to compare with.
- * @param isAsc True if you want to sort ascending.
- * @param compareLowercase True if you want to do a lowercase compare.
- * @returns -1, 0 or 1 depending on the sort direction.
- */
-export function compareStrings(
-  a: string,
-  b: string,
-  isAsc: string | boolean = true,
-  compareLowercase = true
-): number {
-  const atest = compareLowercase ? safestrLowercase(a) : safestr(a)
-  const btest = compareLowercase ? safestrLowercase(b) : safestr(b)
-
-  return compareSortOrder(atest, btest, isAsc)
-}
-
-/**
  * Deep clones an object using the JSON.parse(JSON.stringify(obj)) method.
  * Suppresses any exceptions, but still writes to the console.log.
  * @param obj The object to copy.
@@ -1111,6 +1047,51 @@ export function searchObjectForArray(obj: any): any[] {
   }
 
   return []
+}
+
+/**
+ * Compares two objects and returns a value for use in the JavaScript sort() method.
+ * @param a The first object to compare with.
+ * @param b The second object to compare with.
+ * @param isAsc True if you want to sort ascending.
+ * @param compareStringsLowercase True if you want to do a lowercase compare on strings.
+ * @returns -1, 0 or 1 depending on the sort direction.
+ */
+export function sortFunction(
+  a: any,
+  b: any,
+  isAsc: string | boolean = true,
+  compareStringsLowercase = true
+): number {
+  if (isNullOrUndefined(isAsc)) {
+    isAsc = true
+  } else if (isString(isAsc as any)) {
+    isAsc = "desc" !== safestrLowercase(isAsc as string)
+  }
+  // equal items sort equally
+  if (a === b) {
+    return 0
+  }
+  // nulls sort after anything else
+  else if (a === null) {
+    return 1
+  } else if (b === null) {
+    return -1
+  }
+  else if (compareStringsLowercase && isString(a) && isString(b)) {
+    // A little recursive, but we will not come back here a second time.
+    return sortFunction(safestrLowercase(a), safestrLowercase(b), isAsc, false)
+  }
+  // otherwise, if we're ascending, lowest sorts first
+  else if (isAsc) {
+    return a < b ? -1 : 1
+  }
+  // if descending, highest sorts first
+  else {
+    return a < b ? 1 : -1
+  }
+
+  // return (a < b ? -1 : 1) * (isAsc ? 1 : -1)
 }
 
 /**
