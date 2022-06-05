@@ -502,11 +502,20 @@ export function getMantissa(num: number): number {
 
   const str = "" + num
   const arr = str.split(".")
-  if ((isArray(arr), 2 && hasData(arr[1]))) {
+  if ((isArray(arr, 2) && hasData(arr[1]))) {
     return +arr[1]
   }
 
   return 0
+}
+
+/**
+ * Returns a number from a string. A number is allowed too in case you don't know if the value is a number already.
+ * @param stringOrNumber The string or number to return as a number. 
+ * @returns The number representation of the stringOrNumber. If it is a number, just returns the number.
+ */
+export function getAsNumber(stringOrNumber: string | number | null | undefined): number {
+  return getNumberFormatted(stringOrNumber)
 }
 
 /**
@@ -652,7 +661,7 @@ export function getPercentChangeString(
  * @param minlength The required minimum length to consider to have data. If not supplied, defaults to 1.
  * @returns True if the object meets the minimum length requirements.
  */
-export function hasData(o: any, minlength = 1): boolean {
+export function hasData(o: any | null | undefined, minlength = 1): boolean {
   // console.log('minlength: ' + minlength + ', o: ' + o)
   try {
     if (!o) {
@@ -791,7 +800,7 @@ export function isNumber(
  * @param obj Any variable to test if it is null or undefined.
  * @returns True if the object passed in is null or undefined.
  */
-export function isNullOrUndefined(obj: any): boolean {
+export function isNullOrUndefined(obj: any | null | undefined): boolean {
   return "undefined" === typeof obj || null == obj
 }
 
@@ -803,7 +812,7 @@ export function isNullOrUndefined(obj: any): boolean {
  * @returns True if the obj variable is a JavaScript object, and meets an optional minimum length or contains a member with the given name.
  */
 export function isObject(
-  obj: any,
+  obj: any | null | undefined,
   minLengthOrContainsField: number | string = 0
 ): boolean {
   const isok = obj && "object" === typeof obj && !isArray(obj)
@@ -856,11 +865,11 @@ export function getNullObject(obj: any): any {
  * If it is, the ifNull value is used. If there is no ifNull passed in, an empty array is returned.
  * @param arr An array to test for not being null or undefined.
  * @param ifNull If the array is null or undefined, return this value. Defaults to [].
- * @returns A guaranteed array to be nonnull. Returns ifNull if the array does not have data.
+ * @returns A guaranteed array to be nonnull. Returns ifNull if the array does not have data. Or [] if ifNull is not declared.
  */
-export function safeArray(arr: any[], ifNull?: any[]): any[] {
+export function safeArray(arr: any[] | null | undefined, ifNull?: any[]): any[] {
   if (isArray(arr)) {
-    return arr
+    return arr!
   }
 
   return isArray(ifNull) ? (ifNull as any[]) : []
@@ -890,7 +899,7 @@ export function safeJsonToString(json: object, fname?: string): string {
  * @param ifNull If the object is null or undefined, return this value. Defaults to {}.
  * @returns A guaranteed object to be nonnull. Returns ifNull if the object does not have data.
  */
-export function safeObject(obj?: object, ifNull?: object): object {
+export function safeObject(obj: object | null | undefined, ifNull?: object): object {
   if (isObject(obj)) {
     return obj || {}
   }
@@ -905,7 +914,7 @@ export function safeObject(obj?: object, ifNull?: object): object {
  * @param ifNull If the string is null, return this value. Defaults to "".
  * @returns A guaranteed string to be nonnull. Returns ifNull if the string does not have data.
  */
-export function safestr(s?: string, ifNull = ""): string {
+export function safestr(s: string | null | undefined, ifNull = ""): string {
   if (hasData(s)) {
     return s!
   }
@@ -919,7 +928,7 @@ export function safestr(s?: string, ifNull = ""): string {
  * @param trim Optionally trim the string also.
  * @returns A guaranteed string to be nonnull and lowercase.
  */
-export function safestrLowercase(s?: string, trim = true): string {
+export function safestrLowercase(s: string | null | undefined, trim = true): string {
   if (trim) {
     s = safestrTrim(s)
   }
@@ -933,7 +942,7 @@ export function safestrLowercase(s?: string, trim = true): string {
  * @param fname The optional function name that is the source of the operation. Used for exception logging.
  * @returns A the JSON.parsed object or undefined if there was an exception.
  */
-export function safestrToJson(strjson?: string, fname?: string): any {
+export function safestrToJson(strjson: string | null | undefined, fname?: string): any {
   try {
     return JSON.parse(safestr(strjson))
   }
@@ -947,7 +956,7 @@ export function safestrToJson(strjson?: string, fname?: string): any {
  * @param s A string to set to lowercase. If null or undefined, empty string is returned.
  * @returns A guaranteed string to be nonnull and trimmed.
  */
-export function safestrTrim(s?: string): string {
+export function safestrTrim(s: string | null | undefined): string {
   return safestr(s).trim()
 }
 
@@ -957,7 +966,7 @@ export function safestrTrim(s?: string): string {
  * @param trim Optionally trim the string also.
  * @returns A guaranteed string to be nonnull and uppercase.
  */
-export function safestrUppercase(s?: string, trim = true): string {
+export function safestrUppercase(s: string | null | undefined, trim = true): string {
   if (trim) {
     s = safestrTrim(s)
   }
