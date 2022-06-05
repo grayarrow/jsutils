@@ -1,4 +1,4 @@
-type StringOrArray = string | string[]
+export type StringOrStringArray = string | string[]
 
 export class GaHttpError extends Error {
   status = 0;
@@ -13,7 +13,7 @@ export class GaHttpError extends Error {
     this.statusText = res.statusText
     this.type = res.type
   }
-};
+}
 
 /**
  * Adds obj to the list of objects, creating the list if it doesn't exist.
@@ -71,12 +71,14 @@ export function arrayLast(obj: any, defaultIfNone: any = null): any {
  * @param a The first object to compare with.
  * @param b The second object to compare with.
  * @param isAsc True if you want to sort ascending.
+ * @param compareStringsLowercase True if you want to do a lowercase compare on strings.
  * @returns -1, 0 or 1 depending on the sort direction.
  */
 export function compareSortOrder(
   a: any,
   b: any,
-  isAsc: string | boolean = true
+  isAsc: string | boolean = true,
+  compareStringsLowercase = true
 ): number {
   if (isNullOrUndefined(isAsc)) {
     isAsc = true
@@ -92,6 +94,9 @@ export function compareSortOrder(
     return 1
   } else if (b === null) {
     return -1
+  }
+  else if (compareStringsLowercase && isString(a) && isString(b)) {
+    return compareStrings(a, b, isAsc, true)
   }
   // otherwise, if we're ascending, lowest sorts first
   else if (isAsc) {
@@ -316,10 +321,10 @@ export function getBody(ret: any): object {
 
 /**
  * Gets a comma separated list of unique items.
- * @param {StringOrArray} stringOrArray The string or array to flatten.
- * @returns {string} The flattened, comma-separated string.
+ * @param stringOrArray The string or array to flatten.
+ * @returns The flattened, comma-separated string.
  */
-export function getCommaSeparatedList(stringOrArray: StringOrArray): string {
+export function getCommaSeparatedList(stringOrArray: StringOrStringArray): string {
   if (!isArray(stringOrArray)) {
     return stringOrArray as string
   }
@@ -333,7 +338,7 @@ export function getCommaSeparatedList(stringOrArray: StringOrArray): string {
  * @param stringOrArray The string or array to flatten.
  * @returns The flattened, comma-separated string in uppercase.
  */
-export function getCommaUpperList(stringOrArray: StringOrArray): string {
+export function getCommaUpperList(stringOrArray: StringOrStringArray): string {
   return safestrUppercase(getCommaSeparatedList(stringOrArray))
 }
 
@@ -1118,7 +1123,7 @@ export function searchObjectForArray(obj: any): any[] {
  * @returns An array of every string split by splitter.
  */
 export function splitToArray(
-  strOrArray: StringOrArray,
+  strOrArray: StringOrStringArray,
   splitter = ",",
   removeEmpties = true,
   trimStrings = true
@@ -1157,11 +1162,11 @@ export function splitToArray(
  * @returns An array of every string split by splitter, of if only 1 string is the result of splitToArray, the string itself is returned.
  */
 export function splitToArrayOrStringIfOnlyOne(
-  strOrArray: StringOrArray,
+  strOrArray: StringOrStringArray,
   splitter = ",",
   removeEmpties = true,
   trimStrings = true
-): StringOrArray {
+): StringOrStringArray {
   const arr = splitToArray(strOrArray, splitter, removeEmpties, trimStrings)
 
   if (isArray(arr, 2)) {
@@ -1185,11 +1190,11 @@ export function splitToArrayOrStringIfOnlyOne(
  * @returns An array of every string split by splitter, of if only 1 string is the result of splitToArray with every string uppercased, the string itself is returned uppercase.
  */
 export function splitToArrayOrStringIfOnlyOneToUpper(
-  strOrArray: StringOrArray,
+  strOrArray: StringOrStringArray,
   splitter = ",",
   removeEmpties = true,
   trimStrings = true
-): StringOrArray {
+): StringOrStringArray {
   const arr = splitToArrayOrStringIfOnlyOne(
     strOrArray,
     splitter,
