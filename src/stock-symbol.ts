@@ -55,6 +55,77 @@ export interface IExchangeInfo {
   exchangeShortName: string
 }
 
+export interface ICompanyExecutive {
+  symbol: string
+  yearBorn: number
+  pay: number
+  currencyPay: string
+  name: string
+  title: string
+  gender: string
+  titleSince: string
+}
+
+export interface ICompanyFinancialRatios {
+  dividendYielTTM: number
+  dividendYielPercentageTTM: number
+  peRatioTTM: number
+  pegRatioTTM: number
+  payoutRatioTTM: number
+  currentRatioTTM: number
+  quickRatioTTM: number
+  cashRatioTTM: number
+  daysOfSalesOutstandingTTM: number
+  daysOfInventoryOutstandingTTM: number
+  operatingCycleTTM: number
+  daysOfPayablesOutstandingTTM: number
+  cashConversionCycleTTM: number
+  grossProfitMarginTTM: number
+  operatingProfitMarginTTM: number
+  pretaxProfitMarginTTM: number
+  netProfitMarginTTM: number
+  effectiveTaxRateTTM: number
+  returnOnAssetsTTM: number
+  returnOnEquityTTM: number
+  returnOnCapitalEmployedTTM: number
+  netIncomePerEBTTTM: number
+  ebtPerEbitTTM: number
+  ebitPerRevenueTTM: number
+  debtRatioTTM: number
+  debtEquityRatioTTM: number
+  longTermDebtToCapitalizationTTM: number
+  totalDebtToCapitalizationTTM: number
+  interestCoverageTTM: number
+  cashFlowToDebtRatioTTM: number
+  companyEquityMultiplierTTM: number
+  receivablesTurnoverTTM: number
+  payablesTurnoverTTM: number
+  inventoryTurnoverTTM: number
+  fixedAssetTurnoverTTM: number
+  assetTurnoverTTM: number
+  operatingCashFlowPerShareTTM: number
+  freeCashFlowPerShareTTM: number
+  cashPerShareTTM: number
+  operatingCashFlowSalesRatioTTM: number
+  freeCashFlowOperatingCashFlowRatioTTM: number
+  cashFlowCoverageRatiosTTM: number
+  shortTermCoverageRatiosTTM: number
+  capitalExpenditureCoverageRatioTTM: number
+  dividendPaidAndCapexCoverageRatioTTM: number
+  priceBookValueRatioTTM: number
+  priceToBookRatioTTM: number
+  priceToSalesRatioTTM: number
+  priceEarningsRatioTTM: number
+  priceToFreeCashFlowsRatioTTM: number
+  priceToOperatingCashFlowsRatioTTM: number
+  priceCashFlowRatioTTM: number
+  priceEarningsToGrowthRatioTTM: number
+  priceSalesRatioTTM: number
+  dividendYieldTTM: number
+  enterpriseValueMultipleTTM: number
+  priceFairValueTTM: number
+}
+
 export interface ICompanyInfo {
   id: string
   exchange: string
@@ -102,6 +173,17 @@ export interface ICompanyProfile {
   dcf: string
   image: string
   ipoDate: string
+}
+
+export interface IIpoCalendar {
+  date: string
+  company: string
+  symbol: string
+  exchange: string
+  actions: string
+  shares: number,
+  priceRange: string
+  marketCap: number
 }
 
 export interface IPlotPricesWithMidpoint {
@@ -238,4 +320,88 @@ export const CONST_defaultCompanyCity: ICompanyCity = {
   slug: '',
   ticker: '',
   scales: [],
+}
+
+export interface IRatioCashFlow {
+  capitalExpenditureCoverageRatios: string
+  cashFlowCoverageRatios: string
+  cashPerShare: string
+  dividendPayoutRatio: string
+  dividendpaidAndCapexCoverageRatios: string
+  freeCashFlowOperatingCashFlowRatio: string
+  freeCashFlowPerShare: string
+  operatingCashFlowPerShare: string
+  operatingCashFlowSalesRatio: string
+  payoutRatio: string
+  receivablesTurnover: string
+  shortTermCoverageRatios: string
+}
+
+export interface IRatioDebt {
+  cashFlowToDebtRatio: string
+  companyEquityMultiplier: string
+  debtEquityRatio: string
+  debtRatio: string
+  interestCoverage: string
+  longtermDebtToCapitalization: string
+  totalDebtToCapitalization: string
+}
+
+export interface IRatioInvestmentValuation {
+  dividendYield: string
+  enterpriseValueMultiple: string
+  priceBookValueRatio: string
+  priceCashFlowRatio: string
+  priceEarningsRatio: string
+  priceEarningsToGrowthRatio: string
+  priceFairValue: string
+  priceSalesRatio: string
+  priceToBookRatio: string
+  priceToFreeCashFlowsRatio: string
+  priceToOperatingCashFlowsRatio: string
+  priceToSalesRatio: string
+  receivablesTurnover: string
+}
+
+export interface IRatioLiquidity {
+  cashConversionCycle: string
+  cashRatio: string
+  currentRatio: string
+  daysOfInventoryOutstanding: string
+  daysOfPayablesOutstanding: string
+  daysOfSalesOutstanding: string
+  operatingCycle: string
+  quickRatio: string
+}
+
+export interface IRatioOperatingPerformance {
+  assetTurnover: string
+  fixedAssetTurnover: string
+  inventoryTurnover: string
+  payablesTurnover: string
+  receivablesTurnover: string
+}
+
+export interface IRatioProfitability {
+  eBITperRevenue: string
+  eBTperEBIT: string
+  effectiveTaxRate: string
+  grossProfitMargin: string
+  nIperEBT: string
+  netProfitMargin: string
+  operatingProfitMargin: string
+  pretaxProfitMargin: string
+  returnOnAssets: string
+  returnOnCapitalEmployed: string
+  returnOnEquity: string
+}
+
+export interface IRatios {
+  date: string
+  cashFlowIndicatorRatios: IRatioCashFlow
+  debtRatios: IRatioDebt
+  investmentValuationRatios: IRatioInvestmentValuation
+  liquidityMeasurementRatios: IRatioLiquidity
+  operatingPerformanceRatios: IRatioOperatingPerformance
+  profitabilityIndicatorRatios: IRatioProfitability
 }
