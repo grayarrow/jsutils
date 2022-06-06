@@ -1,4 +1,4 @@
-import { isObject, isString, safestrLowercase } from "./skky"
+import { isObject, safestrLowercase } from "./skky"
 
 export interface ICaptureResponse<T> {
   id: number
@@ -29,6 +29,10 @@ export class CaptureResponse<T> implements ICaptureResponse<T> {
   }
 
   static isSuccess(ret?: any): boolean {
-    return 'success' === safestrLowercase(ret?.result)
+    if (isObject(ret, "result")) {
+      return 'success' === safestrLowercase(ret.result)
+    }
+
+    return false
   }
 }
