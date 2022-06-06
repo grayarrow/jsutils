@@ -435,37 +435,6 @@ export function fetchHttpPut(
 }
 
 /**
- * Returns a new global unique identifier (GUID).
- * @returns A global unique identifier as a 16 character string.
- */
-export function newGuid(): string {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8
-    return v.toString(16)
-  })
-}
-
-/**
- * Returns the mantissa as a whole number.
- * @param num The decimal number to get the mantissa for.
- * @returns The whole number value of the mantissa.
- */
-export function getMantissa(num: number): number {
-  if (!num) {
-    return 0
-  }
-
-  const str = "" + num
-  const arr = str.split(".")
-  if ((isArray(arr, 2) && hasData(arr[1]))) {
-    return +arr[1]
-  }
-
-  return 0
-}
-
-/**
  * Returns a number from a string. A number is allowed too in case you don't know if the value is a number already.
  * If a null or undefined value is passed in, 0 is returned.
  * @param stringOrNumber The string or number to return as a number.
@@ -485,6 +454,65 @@ export function getAsNumberOrUndefined(stringOrNumber: string | number | null | 
   if (!isNullOrUndefined(stringOrNumber)) {
     return getNumberFormatted(stringOrNumber)
   }
+}
+
+/**
+ * When getting form data from a UI, the textbox data is always a string.
+ * Use this method to convert any string, number or boolean to its boolean value;
+ * @param b Any object to test if it can be converted to a boolean.
+ */
+export function getBoolean(b: any): boolean {
+  if (!b) {
+    return false
+  }
+
+  if (isBoolean(b)) {
+    return b
+  }
+
+  if (isString(b)) {
+    const s = safestrLowercase(b).trim()
+    switch (s) {
+      case 'false':
+      case 'f':
+      case 'n':
+      case 'no':
+      case '0':
+      case '':
+        return false
+      // case 'true':
+      // case 't':
+      // case 'y':
+      // case 'yes':
+      default:
+        return true
+    }
+  }
+
+  if (isNumber(b)) {
+    return 0 !== b
+  }
+
+  return false
+}
+
+/**
+ * Returns the mantissa as a whole number.
+ * @param num The decimal number to get the mantissa for.
+ * @returns The whole number value of the mantissa.
+ */
+export function getMantissa(num: number): number {
+  if (!num) {
+    return 0
+  }
+
+  const str = "" + num
+  const arr = str.split(".")
+  if ((isArray(arr, 2) && hasData(arr[1]))) {
+    return +arr[1]
+  }
+
+  return 0
 }
 
 /**
@@ -702,7 +730,7 @@ export function isEmptyObject(obj: any): boolean {
   return (
     null == obj ||
     (isObject(obj) &&
-      (Object.keys(obj) || []).length === 0 &&
+      safeArray(Object.keys(obj)).length === 0 &&
       obj.constructor === Object)
   )
 }
@@ -818,6 +846,18 @@ export function isString(obj: any, minlength = 0): boolean {
     ("string" === typeof obj || (obj && obj instanceof String)) &&
     obj.length >= minlength
   )
+}
+
+/**
+ * Returns a new global unique identifier (GUID).
+ * @returns A global unique identifier as a 16 character string.
+ */
+export function newGuid(): string {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
 }
 
 /**
