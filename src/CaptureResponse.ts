@@ -29,10 +29,6 @@ export class CaptureResponse<T> implements ICaptureResponse<T> {
   }
 
   static isSuccess(ret?: any): boolean {
-    if (isObject(ret, "result")) {
-      return 'success' === safestrLowercase(ret.result)
-    }
-
-    return false
+    return 'success' === safestrLowercase(ret?.result)
   }
 }
