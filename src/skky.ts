@@ -535,7 +535,7 @@ export function getNumberFormatted(
     return parseFloat(getNumberString(num, maxDecimalPlaces, minDecimalPlaces))
   }
 
-  return num ? num : 0
+  return isNumber(num) ? num : 0
 }
 
 /**
