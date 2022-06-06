@@ -448,11 +448,13 @@ export function getAsNumber(stringOrNumber: string | number | null | undefined):
  * Returns a number from a string. A number is allowed too in case you don't know if the value is a number already.
  * If a null or undefined is passed in, then undefined is returned.
  * @param stringOrNumber The string or number to return as a number. Or undefined if a null or undefined is passed in.
+ * @param maxDecimalPlaces The maximum number of decimal places to show.
+ * @param minDecimalPlaces The minimum number of required decimal places to show.
  * @returns The number representation of the stringOrNumber. If it is a number, just returns the number.
  */
-export function getAsNumberOrUndefined(stringOrNumber: string | number | null | undefined): number | undefined {
+export function getAsNumberOrUndefined(stringOrNumber: string | number | null | undefined, maxDecimalPlaces?: number, minDecimalPlaces?: number): number | undefined {
   if (!isNullOrUndefined(stringOrNumber)) {
-    return getNumberFormatted(stringOrNumber)
+    return getNumberFormatted(stringOrNumber, maxDecimalPlaces, minDecimalPlaces)
   }
 }
 
@@ -876,12 +878,12 @@ export function getNullObject(obj: any): any {
  * @param ifNull If the array is null or undefined, return this value. Defaults to [].
  * @returns A guaranteed array to be nonnull. Returns ifNull if the array does not have data. Or [] if ifNull is not declared.
  */
-export function safeArray(arr: any[] | null | undefined, ifNull?: any[]): any[] {
+export function safeArray<T>(arr: T[] | null | undefined, ifNull?: T[]): T[] {
   if (isArray(arr)) {
     return arr!
   }
 
-  return isArray(ifNull) ? (ifNull as any[]) : []
+  return isArray(ifNull) ? (ifNull!) : []
 }
 
 /**
