@@ -1,9 +1,20 @@
-import { isObject } from "./skky"
+import { isObject } from './skky'
 
-export interface IAssetQuoteResponse {
-  symbol: string    // "GME",
-  name: string      // "GameStop Corp.",
-  price: number     // 203.0601,
+export interface ISymbolPrice {
+  symbol: string
+  price: number
+}
+export interface ISymbolPriceName extends ISymbolPrice {
+  name: string
+}
+export interface ISymbolPriceVolume extends ISymbolPrice {
+  volume: number
+}
+
+export interface IAssetQuoteResponse extends ISymbolPriceVolume {
+  // symbol: string    // GME,
+  name: string      // GameStop Corp.,
+  // price: number     // 203.0601,
   changesPercentage: number   // -4.36,
   change: number    // -9.2499,
   dayLow: number    // 201.35,
@@ -13,22 +24,16 @@ export interface IAssetQuoteResponse {
   marketCap: number // 14376655872,
   priceAvg50: number   // 211.59486,
   priceAvg200: number  // 136.80391,
-  volume: number    // 2006952,
+  // volume: number    // 2006952,
   avgVolume: number // 9315590,
-  exchange: string  // "NYSE",
+  exchange: string  // NYSE,
   open: number      // 214,
   previousClose: number   // 212.31,
   eps: number       // -1.78,
   pe: number        // null,
-  earningsAnnouncement: string  // "2021-06-09T16:09:00.000+0000",
+  earningsAnnouncement: string  // 2021-06-09T16:09:00.000+0000,
   sharesOutstanding: number     // 70800004,
   timestamp: number // 1624635044
-}
-
-export interface IAssetQuoteShort {
-  symbol: string
-  price: number
-  volume: number
 }
 
 export interface IPolitiscale {
@@ -47,10 +52,7 @@ export interface ICompanyCity {
   website: string
 }
 
-export interface IExchangeInfo {
-  symbol: string
-  name: string
-  price: number
+export interface IExchangeInfo extends ISymbolPriceName {
   exchange: string
   exchangeShortName: string
 }
@@ -141,9 +143,9 @@ export interface ICompanyInfo {
   updatedby: string
 }
 
-export interface ICompanyProfile {
-  symbol: string
-  price: number
+export interface ICompanyProfile extends ISymbolPrice {
+  // symbol: string
+  // price: number
   beta: number
   volAvg: number
   mktCap: number
@@ -175,6 +177,12 @@ export interface ICompanyProfile {
   ipoDate: string
 }
 
+export interface IGainerLoser extends ISymbolPrice {
+  name: string
+  change: number
+  changesPercentage: number
+}
+
 export interface IIpoCalendar {
   date: string
   company: string
@@ -197,7 +205,7 @@ export interface IPlotPricesWithMidpoint {
 }
 
 export interface IPriceHistoricalFull {
-  date: string      // "2021-06-24",
+  date: string      // 2021-06-24,
   open: number      // 221.16,
   high: number      // 227.45,
   low: number       // 211.6,
@@ -208,7 +216,7 @@ export interface IPriceHistoricalFull {
   change: number    // -8.85,
   changePercent: number     // -4.002,
   vwap: number      // 217.12, Volume Weighted Average Price
-  label: string     // "June 24, 21",
+  label: string     // June 24, 21,
   changeOverTime: number    // -0.04002,
   // datetime: number  // 1624507200000 TradePlotter added
 }
@@ -223,7 +231,7 @@ export interface IPriceHistory {
   volume: number
 }
 
-export interface IPriceHistoryWithDateTime {
+export interface IPriceHistoryWithDateTime extends IPriceHistory {
   datetime: number
 }
 
@@ -234,7 +242,7 @@ export interface ISymbolPrices {
   requestDate: number
 }
 
-export class AssetQuoteShort implements IAssetQuoteShort {
+export class AssetQuoteShort implements ISymbolPriceVolume {
   symbol = ''
   price = 0
   volume = 0
@@ -284,12 +292,13 @@ export class ExchangeInfo implements IExchangeInfo {
   symbol = ''
   name = ''
   price = 0
+  volume = 0    // Not sure about this one
   exchange = ''
   exchangeShortName = ''
 }
 
 export class PriceHistoricalResponse implements IPriceHistoricalFull {
-  date = '';  // "2021-06-24",
+  date = '';  // 2021-06-24,
   open = 0;   // 221.16,
   high = 0;   // 227.45,
   low = 0;    // 211.6,
@@ -300,7 +309,7 @@ export class PriceHistoricalResponse implements IPriceHistoricalFull {
   change = 0;   // -8.85,
   changePercent = 0;   // -4.002,
   vwap = 0;   // 217.12,
-  label = '';   // "June 24, 21",
+  label = '';   // June 24, 21,
   changeOverTime = 0;   // -0.04002,
   datetime = 0;   // 1624507200000
 
@@ -396,7 +405,67 @@ export interface IRatioProfitability {
   returnOnEquity: string
 }
 
-export interface IRatios {
+export interface IRatio {
+  symbol: string
+  date: string
+  period: string
+  currentRatio: number
+  quickRatio: number
+  cashRatio: number
+  daysOfSalesOutstanding: number
+  daysOfInventoryOutstanding: number
+  operatingCycle: number
+  daysOfPayablesOutstanding: number
+  cashConversionCycle: number
+  grossProfitMargin: number
+  operatingProfitMargin: number
+  pretaxProfitMargin: number
+  netProfitMargin: number
+  effectiveTaxRate: number
+  returnOnAssets: number
+  returnOnEquity: number
+  returnOnCapitalEmployed: number
+  netIncomePerEBT: number
+  ebtPerEbit: number
+  ebitPerRevenue: number
+  debtRatio: number
+  debtEquityRatio: number
+  longTermDebtToCapitalization: number
+  totalDebtToCapitalization: number
+  interestCoverage: number
+  cashFlowToDebtRatio: number
+  companyEquityMultiplier: number
+  receivablesTurnover: number
+  payablesTurnover: number
+  inventoryTurnover: number
+  fixedAssetTurnover: number
+  assetTurnover: number
+  operatingCashFlowPerShare: number
+  freeCashFlowPerShare: number
+  cashPerShare: number
+  payoutRatio: number
+  operatingCashFlowSalesRatio: number
+  freeCashFlowOperatingCashFlowRatio: number
+  cashFlowCoverageRatios: number
+  shortTermCoverageRatios: number
+  capitalExpenditureCoverageRatio: number
+  dividendPaidAndCapexCoverageRatio: number
+  dividendPayoutRatio: number
+  priceBookValueRatio: number
+  priceToBookRatio: number
+  priceToSalesRatio: number
+  priceEarningsRatio: number
+  priceToFreeCashFlowsRatio: number
+  priceToOperatingCashFlowsRatio: number
+  priceCashFlowRatio: number
+  priceEarningsToGrowthRatio: number
+  priceSalesRatio: number
+  dividendYield: number
+  enterpriseValueMultiple: number
+  priceFairValue: number
+}
+
+export interface IFinancialRatios {
   date: string
   cashFlowIndicatorRatios: IRatioCashFlow
   debtRatios: IRatioDebt
@@ -404,4 +473,9 @@ export interface IRatios {
   liquidityMeasurementRatios: IRatioLiquidity
   operatingPerformanceRatios: IRatioOperatingPerformance
   profitabilityIndicatorRatios: IRatioProfitability
+}
+
+export interface IFinancialRatiosResponse {
+  symbol: string
+  ratios: IFinancialRatios[]
 }

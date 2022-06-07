@@ -1,4 +1,4 @@
-import { isObject, isArray, isString, timeDifference, timeDifferenceInSeconds, timeDifferenceString, safestr, getNumberString, safeArray } from "./skky"
+import { isObject, isArray, isString, timeDifference, timeDifferenceInSeconds, timeDifferenceString, safestr, getNumberString, safeArray, hasData } from "./skky"
 
 export class InstrumentationStatistics {
   successes = 0
@@ -63,55 +63,58 @@ export class InstrumentationStatistics {
     return 0
   }
 
-  addFailure(msg: any): number {
+  addFailure(msg?: string): number {
     ++this.failures
     this.addProcessed(msg)
 
     return this.failures
   }
 
-  addSuccess(msg: any): number {
+  addSuccess(msg?: string): number {
     ++this.successes
     this.addProcessed(msg)
 
     return this.successes
   }
 
-  addSkip(msg: any): number {
+  addSkip(msg?: string): number {
     ++this.skipped
     this.addProcessed(msg)
 
     return this.skipped
   }
-  added(msg: any): number {
+  added(msg?: string): number {
     ++this.add
 
     this.addMessage(msg)
     return this.add
   }
-  deleted(msg: any): number {
+  deleted(msg?: string): number {
     ++this.delete
 
     this.addMessage(msg)
     return this.delete
   }
-  updated(msg: any): number {
+  updated(msg?: string): number {
     ++this.update
 
     this.addMessage(msg)
     return this.update
   }
-  upserted(msg: any): number {
+  upserted(msg?: string): number {
     ++this.upsert
 
     this.addMessage(msg)
     return this.upsert
   }
 
-  addProcessed(msg: any): number {
+  addProcessed(msg?: string): number {
     ++this.totalProcessed
 
-    this.addMessage(msg)
+    if (hasData(msg)) {
+      this.addMessage(msg)
+    }
+
     return this.totalProcessed
   }
 

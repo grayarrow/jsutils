@@ -573,19 +573,20 @@ export function getNumberString(
  * @param index The index of the object array to return. Use negative numbers to start from the end of the array. -1 returns the last item.
  * @returns The given object at arr[index], or undefined if it does not exist.
  */
-export function getObject(arr: any, index = 0) {
+export function getObject<T>(arr: T | T[], index = 0): T | undefined {
   if (!isNullOrUndefined(arr)) {
     index = index || 0
 
     if (isArray(arr)) {
-      if (index >= 0 && arr.length > index) {
-        return arr[index]
+      const arrT = (arr as T[])
+      if (index >= 0 && arrT.length > index) {
+        return arrT[index]
       }
-      else if (index < 0 && arr.length >= Math.abs(index)) {
-        return arr[arr.length - Math.abs(index)]
+      else if (index < 0 && arrT.length >= Math.abs(index)) {
+        return arrT[arrT.length - Math.abs(index)]
       }
     } else if (index === 0) {
-      return arr
+      return arr as T
     }
   }
 }
