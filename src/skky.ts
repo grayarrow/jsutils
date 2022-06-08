@@ -37,15 +37,15 @@ export function addObjectToList(listObjects: any[], obj: any[]): any {
 }
 
 /**
- * Gets the first item from an array, or a default value if the array is empty. Null is returned if no default value provided.
+ * Gets the first item from an array, or a default value if the array is empty. Undefined is returned if no default value provided.
  * Good for quick tests of objects to see if it is an array, and getting the first value.
- * @param obj The array to get the first value from, if it is an array.
+ * @param tArray The array to get the first value from, if it is an array.
  * @param defaultIfNone An optional default value if the array is empty.
- * @returns The first item in the array, or null or defaultIfNone if the array has no values.
+ * @returns The first item in the array, or undefined or defaultIfNone if the array has no values.
  */
-export function arrayFirst(obj: any, defaultIfNone: any = null): any {
-  if (isArray(obj, 1)) {
-    return obj[0]
+export function arrayFirst<T>(tArray: T[] | undefined, defaultIfNone?: T): T | undefined {
+  if (isArray(tArray, 1)) {
+    return tArray![0]
   }
 
   return defaultIfNone
@@ -54,13 +54,13 @@ export function arrayFirst(obj: any, defaultIfNone: any = null): any {
 /**
  * Gets the last item from an array, or a default value if the array is empty. Null is returned if no default value provided.
  * Good for quick tests of objects to see if it is an array, and getting the first value.
- * @param obj The array to get the last value from, if it is an array.
+ * @param tArray The array to get the last value from, if it is an array.
  * @param defaultIfNone An optional default value if the array is empty.
  * @returns The last item in the array, or null or defaultIfNone if the array has no values.
  */
-export function arrayLast(obj: any, defaultIfNone: any = null): any {
-  if (isArray(obj, 1)) {
-    return getObject(-1)
+export function arrayLast<T>(tArray: T[] | undefined, defaultIfNone?: T): T | undefined {
+  if (isArray(tArray, 1)) {
+    return getObject(tArray!, -1)
   }
 
   return defaultIfNone

@@ -204,35 +204,28 @@ export interface IPlotPricesWithMidpoint {
   requestDate: number
 }
 
-export interface IPriceHistoricalFull {
+export interface IPriceHistory {
+  // symbol: string
   date: string      // 2021-06-24,
   open: number      // 221.16,
   high: number      // 227.45,
   low: number       // 211.6,
   close: number     // 212.31,
-  adjClose: number  // 212.31,
   volume: number    // 3866565,
-  unadjustedVolume: number  // 3866565,
-  change: number    // -8.85,
-  changePercent: number     // -4.002,
-  vwap: number      // 217.12, Volume Weighted Average Price
-  label: string     // June 24, 21,
-  changeOverTime: number    // -0.04002,
-  // datetime: number  // 1624507200000 TradePlotter added
 }
 
-export interface IPriceHistory {
-  // symbol: string
-  date: string
-  open: number
-  low: number
-  high: number
-  close: number
-  volume: number
+export interface IPriceHistoricalFull extends IPriceHistory {
+  adjClose: number          // 212.31,
+  unadjustedVolume: number  // 3866565,
+  change: number            // -8.85,
+  changePercent: number     // -4.002,
+  vwap: number              // 217.12, Volume Weighted Average Price
+  label: string             // June 24, 21,
+  changeOverTime: number    // -0.04002,
 }
 
 export interface IPriceHistoryWithDateTime extends IPriceHistory {
-  datetime: number
+  datetime: number   // 1624507200000
 }
 
 export interface ISymbolPrices {
