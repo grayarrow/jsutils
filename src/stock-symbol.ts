@@ -11,6 +11,14 @@ export interface ISymbolPriceVolume extends ISymbolPrice {
   volume: number
 }
 
+export interface ISymbolSearch {
+  symbol: string
+  name: string
+  currency: string
+  stockExchange: string
+  exchangeShortName: string
+}
+
 export interface IAssetQuoteResponse extends ISymbolPriceVolume {
   // symbol: string    // GME,
   name: string      // GameStop Corp.,
