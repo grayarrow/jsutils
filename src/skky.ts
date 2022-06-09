@@ -1124,15 +1124,20 @@ export function sortFunction(
   } else if (isString(isAsc as any)) {
     isAsc = "desc" !== safestrLowercase(isAsc as string)
   }
-  // equal items sort equally
-  if (a === b) {
+  const aEmpty = isNullOrUndefined(a)
+  const bEmpty = isNullOrUndefined(b)
+  if (aEmpty && bEmpty) {
     return 0
   }
-  // nulls sort after anything else
-  else if (a === null) {
+  // null and undefined sort after anything else
+  else if (aEmpty) {
     return 1
-  } else if (b === null) {
+  } else if (bEmpty) {
     return -1
+  }
+  // equal items sort equally
+  else if (a === b) {
+    return 0
   }
   else if (compareStringsLowercase && isString(a) && isString(b)) {
     // A little recursive, but we will not come back here a second time.
