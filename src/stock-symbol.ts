@@ -1,27 +1,31 @@
 import { isObject } from './skky'
 
-export interface ISymbolPrice {
+export interface ISymbol {
   symbol: string
-  price: number
 }
-export interface ISymbolPriceName extends ISymbolPrice {
+
+export interface ISymbolName extends ISymbol {
   name: string
 }
+
+export interface ISymbolPrice extends ISymbol {
+  price: number
+}
+export interface ISymbolPriceName extends ISymbolPrice, ISymbolName { }
+
 export interface ISymbolPriceVolume extends ISymbolPrice {
   volume: number
 }
 
-export interface ISymbolSearch {
-  symbol: string
-  name: string
+export interface ISymbolSearch extends ISymbolName {
   currency: string
   stockExchange: string
   exchangeShortName: string
 }
 
-export interface IAssetQuoteResponse extends ISymbolPriceVolume {
+export interface IAssetQuoteResponse extends ISymbolPriceVolume, ISymbolName {
   // symbol: string    // GME,
-  name: string      // GameStop Corp.,
+  // name: string      // GameStop Corp.,
   // price: number     // 203.0601,
   changesPercentage: number   // -4.36,
   change: number    // -9.2499,
@@ -65,12 +69,10 @@ export interface IExchangeInfo extends ISymbolPriceName {
   exchangeShortName: string
 }
 
-export interface ICompanyExecutive {
-  symbol: string
+export interface ICompanyExecutive extends ISymbolName {
   yearBorn: number
   pay: number
   currencyPay: string
-  name: string
   title: string
   gender: string
   titleSince: string
@@ -185,16 +187,14 @@ export interface ICompanyProfile extends ISymbolPrice {
   ipoDate: string
 }
 
-export interface IGainerLoser extends ISymbolPrice {
-  name: string
+export interface IGainerLoser extends ISymbolPrice, ISymbolName {
   change: number
   changesPercentage: number
 }
 
-export interface IIpoCalendar {
+export interface IIpoCalendar extends ISymbol {
   date: string
   company: string
-  symbol: string
   exchange: string
   actions: string
   shares: number,
@@ -202,8 +202,7 @@ export interface IIpoCalendar {
   marketCap: number
 }
 
-export interface IPlotPricesWithMidpoint {
-  symbol: string
+export interface IPlotPricesWithMidpoint extends ISymbol {
   startPrice: number
   startDate: number
   endPrice: number
@@ -236,8 +235,7 @@ export interface IPriceHistoryWithDateTime extends IPriceHistory {
   datetime: number   // 1624507200000
 }
 
-export interface ISymbolPrices {
-  symbol: string
+export interface ISymbolPrices extends ISymbol {
   candles: IPriceHistoryWithDateTime[],
   midprice: number
   requestDate: number
@@ -406,8 +404,7 @@ export interface IRatioProfitability {
   returnOnEquity: string
 }
 
-export interface IRatio {
-  symbol: string
+export interface IRatio extends ISymbol {
   date: string
   period: string
   currentRatio: number
@@ -476,7 +473,6 @@ export interface IFinancialRatios {
   profitabilityIndicatorRatios: IRatioProfitability
 }
 
-export interface IFinancialRatiosResponse {
-  symbol: string
+export interface IFinancialRatiosResponse extends ISymbol {
   ratios: IFinancialRatios[]
 }

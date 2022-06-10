@@ -7,6 +7,6 @@ export interface ICreatedOnBy {
   createdon: Date
 }
 export interface IUpdatedOnBy {
-  updatedby: string
-  updatedon: Date
+  updatedby?: string
+  updatedon?: Date
 }
