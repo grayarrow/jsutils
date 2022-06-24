@@ -20,7 +20,6 @@ export class CaptureResponse<T> implements ICaptureResponse<T> {
   // General purpose
   obj?: T
 
-
   constructor(result = '', msg = '', responseCode = 0, obj?: T) {
     this.result = result
     this.msg = msg

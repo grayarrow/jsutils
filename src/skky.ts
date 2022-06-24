@@ -1,4 +1,7 @@
 export type StringOrStringArray = string | string[]
+export type fetchParams = {
+  url: string, method: string, body?: any, fname?: string, bearerToken?: string
+}
 
 export class GaHttpError extends Error {
   status = 0;
@@ -244,10 +247,10 @@ export function deepDiffMapper(): any {
 /**
  * Looks for a ret.body object to return.
  * Throws an Error if the body is not found or not an object.
- * @param {any} ret The object to get the ret.body object.
- * @returns {object} The existing ret.body object of the ret object..
+ * @param ret The object to get the ret.body object.
+ * @returns The existing ret.body object of the ret object..
  */
-export function getBody(ret: any): object {
+export function getBody(ret: any): any {
   if (!isObject(ret) || !isObject(ret.body)) {
     throw new Error("Object body not found")
   }
@@ -337,7 +340,7 @@ export function fetchHttpJsonResponseHandler(
  * @param bearerToken An optional security token to add as Authorization to the HTTP header.
  * @returns The returned Response object in a Promise.
  */
-function fetchHttp(url: string, method: string, body?: any, fname?: string, bearerToken?: string): Promise<any> {
+export function fetchHttp(url: string, method: string, body?: any, fname?: string, bearerToken?: string): Promise<any> {
   const req = {
     method,
     headers: fetchHttpHeaderJson(bearerToken),
@@ -347,8 +350,8 @@ function fetchHttp(url: string, method: string, body?: any, fname?: string, bear
     (req as any).body = isObject(body) ? JSON.stringify(body) : body
   }
 
-  fname = safestr(fname as any, `fetch${method}`)
-  return fetch(url, req).then((res) => fetchHttpJsonResponseHandler(method, fname as string, res))
+  return fetch(url, req)
+    .then((res) => fetchHttpJsonResponseHandler(method, safestr(fname, `fetch${method}`), res))
 }
 
 /**
