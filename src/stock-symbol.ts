@@ -235,6 +235,20 @@ export interface IPriceHistoryWithDateTime extends IPriceHistory {
   datetime: number   // 1624507200000
 }
 
+export interface ISpac extends ISymbolName {
+  ipoDate: string
+  marketCap: string
+  mergerPending: string
+  leverageFactor: number
+  momentumFactor10: number
+  momentumFactor200: number
+  lastClosePrice: number
+  sharesOutstanding: string
+  averageTradingVolume: string
+  percentTraded: string
+  action: string
+}
+
 export interface ISymbolPrices extends ISymbol {
   candles: IPriceHistoryWithDateTime[],
   midprice: number
