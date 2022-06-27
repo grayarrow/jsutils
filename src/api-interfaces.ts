@@ -2,6 +2,15 @@ export interface IdApi<T> {
   id: T
 }
 
+export interface ICreatedBy {
+  createdby: string
+  created: Date
+}
+export interface IUpdatedBy {
+  updatedby: string
+  updated: Date
+}
+
 export interface ICreatedOnBy {
   createdby: string
   createdon: Date
