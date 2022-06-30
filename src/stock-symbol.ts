@@ -4,13 +4,19 @@ export interface ISymbol {
   symbol: string
 }
 
+export interface IDate {
+  date: string
+}
+
+export interface IPrice {
+  price: number
+}
+
 export interface ISymbolName extends ISymbol {
   name: string
 }
 
-export interface ISymbolPrice extends ISymbol {
-  price: number
-}
+export interface ISymbolPrice extends ISymbol, IPrice { }
 export interface ISymbolPriceName extends ISymbolPrice, ISymbolName { }
 
 export interface ISymbolPriceVolume extends ISymbolPrice {
@@ -53,8 +59,7 @@ export interface IPolitiscale {
   rangeValue: number
 }
 
-export interface ICompanyCity {
-  date: string
+export interface ICompanyCity extends IDate {
   description: string
   imageUrl: string
   name: string
@@ -192,8 +197,7 @@ export interface IGainerLoser extends ISymbolPrice, ISymbolName {
   changesPercentage: number
 }
 
-export interface IIpoCalendar extends ISymbol {
-  date: string
+export interface IIpoCalendar extends ISymbol, IDate {
   company: string
   exchange: string
   actions: string
@@ -211,9 +215,9 @@ export interface IPlotPricesWithMidpoint extends ISymbol {
   requestDate: number
 }
 
-export interface IPriceHistory {
+export interface IPriceHistory extends IDate {
   // symbol: string
-  date: string      // 2021-06-24,
+  // date: string      // 2021-06-24,
   open: number      // 221.16,
   high: number      // 227.45,
   low: number       // 211.6,
@@ -308,6 +312,33 @@ export class ExchangeInfo implements IExchangeInfo {
   volume = 0    // Not sure about this one
   exchange = ''
   exchangeShortName = ''
+}
+
+export interface IMarketHolidays {
+  year: number,
+  "New Years Day": string
+  "Martin Luther King, Jr. Day": string
+  "Washington's Birthday": string
+  "Good Friday": string
+  "Memorial Day": string
+  "Juneteenth National Independence Day": string
+  "Independence Day": string
+  "Labor Day": string
+  "Thanksgiving Day": string
+  "Christmas": string
+}
+export interface IMarketOpenCloseHours {
+  openingHour: string
+  closingHour: string
+}
+export interface IMarketHours {
+  stockExchangeName: string
+  stockMarketHours: IMarketOpenCloseHours
+  stockMarketHolidays: IMarketHolidays[]
+  isTheStockMarketOpen: boolean,
+  isTheEuronextMarketOpen: boolean,
+  isTheForexMarketOpen: boolean,
+  isTheCryptoMarketOpen: boolean
 }
 
 export class PriceHistoricalResponse implements IPriceHistoricalFull {
@@ -418,8 +449,7 @@ export interface IRatioProfitability {
   returnOnEquity: string
 }
 
-export interface IRatio extends ISymbol {
-  date: string
+export interface IRatio extends ISymbol, IDate {
   period: string
   currentRatio: number
   quickRatio: number
@@ -477,8 +507,7 @@ export interface IRatio extends ISymbol {
   priceFairValue: number
 }
 
-export interface IFinancialRatios {
-  date: string
+export interface IFinancialRatios extends IDate {
   cashFlowIndicatorRatios: IRatioCashFlow
   debtRatios: IRatioDebt
   investmentValuationRatios: IRatioInvestmentValuation
@@ -489,4 +518,26 @@ export interface IFinancialRatios {
 
 export interface IFinancialRatiosResponse extends ISymbol {
   ratios: IFinancialRatios[]
+}
+
+export interface ISectorChangePercentage {
+  sector: string
+  changesPercentage: string
+}
+
+export interface ISectorsHistorical extends IDate {
+  utilitiesChangesPercentage: number
+  basicMaterialsChangesPercentage: number
+  communicationServicesChangesPercentage: number
+  conglomeratesChangesPercentage: number
+  consumerCyclicalChangesPercentage: number
+  consumerDefensiveChangesPercentage: number
+  energyChangesPercentage: number
+  financialChangesPercentage: number
+  financialServicesChangesPercentage: number
+  healthcareChangesPercentage: number
+  industrialsChangesPercentage: number
+  realEstateChangesPercentage: number
+  servicesChangesPercentage: number
+  technologyChangesPercentage: number
 }

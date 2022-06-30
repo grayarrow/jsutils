@@ -1,14 +1,11 @@
+import { ICreatedBy, IUpdatedBy } from "./api-interfaces"
+import { IdVal } from "./id-val"
+import { INameValString } from "./name-val"
 import { isObject } from "./skky"
 
-export interface IConfig {
-  id: number
+export interface IConfig extends IdVal<number, string>, ICreatedBy, IUpdatedBy {
   userid: number
   name: string
-  val: string
-  updatedby: string
-  updatedon: Date
-  createdby: string
-  createdon: Date
 }
 
 export class Config implements IConfig {
@@ -17,18 +14,18 @@ export class Config implements IConfig {
   name = ''
   val = ''
   updatedby = 'Config'
-  updatedon = new Date()
+  updated = new Date()
   createdby = 'Config'
-  createdon = new Date()
+  created = new Date()
 
   constructor(id = 0,
     userid = 0,
     name = '',
     val = '',
     updatedby = 'Config',
-    updatedon = new Date(),
+    updated = new Date(),
     createdby = 'Config',
-    createdon = new Date()) {
+    created = new Date()) {
     if (isObject(id)) {
       this.copyFromDatabase(id as any)
     }
@@ -39,9 +36,9 @@ export class Config implements IConfig {
       this.name = name
       this.val = val
       this.updatedby = updatedby
-      this.updatedon = updatedon
+      this.updated = updated
       this.createdby = createdby
-      this.createdon = createdon
+      this.created = created
     }
   }
 
@@ -51,15 +48,15 @@ export class Config implements IConfig {
     this.name = dbtp.name
     this.val = dbtp.val
     this.updatedby = dbtp.updatedby
-    this.updatedon = dbtp.updatedon
+    this.updated = dbtp.updated
     this.createdby = dbtp.createdby
-    this.createdon = dbtp.createdon
+    this.created = dbtp.created
   }
 
-  api(): { name: string, val: string } {
+  api(): INameValString {
     return {
       name: this.name,
       val: this.val
     }
   }
-};
+}
