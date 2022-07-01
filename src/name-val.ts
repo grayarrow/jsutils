@@ -1,22 +1,21 @@
-export interface INameVal<TVal> {
+export interface INameVal<T = string> {
   name: string
-  val: TVal
+  val: T
 }
 
-export interface INameValString extends INameVal<string> { }
-
-export class NameVal<TVal> implements INameVal<TVal> {
+export class NameVal<T = string> implements INameVal<T> {
   name: string
-  val: TVal
+  val: T
 
-  constructor(name: string, val: TVal) {
+  constructor(name: string, val: T) {
     this.name = name
     this.val = val
   }
 }
 
-export class NameValString extends NameVal<string> implements INameValString {
-  constructor(name: string, val: string) {
-    super(name, val)
-  }
+export type NameValObj<T = string> = {
+  name: string
+  val: T
 }
+
+export type NameValString = NameValObj<string>

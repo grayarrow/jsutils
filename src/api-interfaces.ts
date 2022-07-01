@@ -1,4 +1,4 @@
-export interface IdApi<T> {
+export interface IdApi<T = string> {
   id: T
 }
 

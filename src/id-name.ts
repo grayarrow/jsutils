@@ -1,8 +1,8 @@
 import { IdApi } from "./api-interfaces"
 
-export class IdName<T> implements IdApi<T> {
+export class IdName<T = string> implements IdApi<T> {
   id: T
-  name = ''
+  name: string
 
   constructor(id: T, name: string) {
     this.id = id
@@ -16,8 +16,9 @@ export class IdNameNumber extends IdName<number> {
   }
 }
 
-export class IdNameString extends IdName<string> {
-  constructor(id = '', name = '') {
-    super(id, name)
-  }
+export type IdNameObj<T = string> = {
+  id: T
+  name: string
 }
+
+export type IdNameString = IdNameObj<string>
