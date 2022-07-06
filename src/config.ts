@@ -1,6 +1,6 @@
 import { ICreatedBy, IUpdatedBy } from "./api-interfaces"
 import { IdVal } from "./id-val"
-import { NameValObj } from "./name-val"
+import { NameValType } from "./name-val"
 import { isObject } from "./skky"
 
 export interface IConfig extends IdVal<number, string>, ICreatedBy, IUpdatedBy {
@@ -53,7 +53,7 @@ export class Config implements IConfig {
     this.created = dbtp.created
   }
 
-  api(): NameValObj {
+  api(): NameValType {
     return {
       name: this.name,
       val: this.val

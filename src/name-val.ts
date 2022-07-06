@@ -13,9 +13,7 @@ export class NameVal<T = string> implements INameVal<T> {
   }
 }
 
-export type NameValObj<T = string> = {
+export type NameValType<T = string> = {
   name: string
   val: T
 }
-
-export type NameValString = NameValObj<string>

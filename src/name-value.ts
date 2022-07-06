@@ -16,11 +16,11 @@ export class NameValue<T = string> implements INameValue<T> {
   }
 }
 
-export type NameValueObj<T = string> = {
+export type NameValueType<T = string> = {
   name: string
   value: T
 }
 
-export type NameValueBoolean = NameValueObj<boolean>
-export type NameValueNumber = NameValueObj<number>
-export type NameValueString = NameValueObj<string>
+export type NameValueBoolean = NameValueType<boolean>
+export type NameValueNumber = NameValueType<number>
+export type NameValueString = NameValueType<string>

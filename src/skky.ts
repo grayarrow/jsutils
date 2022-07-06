@@ -4,13 +4,14 @@ export type fetchParams = {
 }
 
 export class GaHttpError extends Error {
-  status = 0;
-  statusText = "";
-  type: ResponseType = "basic";
+  status = 0
+  statusText = ""
+  name = "GaHttpError"
+  type: ResponseType = "basic"
 
   constructor(m: string, res: Response) {
     super(m)
-    this.name = "GaHttpError"
+    Object.setPrototypeOf(this, new.target.prototype)
 
     this.status = res.status
     this.statusText = res.statusText
@@ -25,7 +26,7 @@ export class GaHttpError extends Error {
  * @param obj Array of items to add to listObjects.
  * @returns listObjects. If null, was passed, it is a new array.
  */
-export function addObjectToList(listObjects: any[], obj: any[]): any {
+export function addObjectToList<T>(listObjects: T[], obj: T[]): T[] | undefined {
   if (isNullOrUndefined(obj)) {
     return
   }
@@ -33,7 +34,7 @@ export function addObjectToList(listObjects: any[], obj: any[]): any {
   listObjects = safeArray(listObjects)
 
   for (let i = 0; getObject(obj, i); ++i) {
-    listObjects.push(getObject(obj, i))
+    listObjects.push(getObject(obj, i)!)
   }
 
   return listObjects
@@ -46,7 +47,7 @@ export function addObjectToList(listObjects: any[], obj: any[]): any {
  * @param defaultIfNone An optional default value if the array is empty.
  * @returns The first item in the array, or undefined or defaultIfNone if the array has no values.
  */
-export function arrayFirst<T>(tArray: T[] | undefined, defaultIfNone?: T): T | undefined {
+export function arrayFirst<T>(tArray: T[] | null | undefined, defaultIfNone?: T): T | undefined {
   if (isArray(tArray, 1)) {
     return tArray![0]
   }
@@ -61,7 +62,7 @@ export function arrayFirst<T>(tArray: T[] | undefined, defaultIfNone?: T): T | u
  * @param defaultIfNone An optional default value if the array is empty.
  * @returns The last item in the array, or null or defaultIfNone if the array has no values.
  */
-export function arrayLast<T>(tArray: T[] | undefined, defaultIfNone?: T): T | undefined {
+export function arrayLast<T>(tArray: T[] | null | undefined, defaultIfNone?: T): T | undefined {
   if (isArray(tArray, 1)) {
     return getObject(tArray!, -1)
   }
@@ -268,7 +269,7 @@ export function getCommaSeparatedList(stringOrArray: StringOrStringArray): strin
     return stringOrArray as string
   }
 
-  const myset: any = new Set(stringOrArray)
+  const myset = new Set(stringOrArray)
   return [...myset].join(",")
 }
 
@@ -871,7 +872,7 @@ export function newGuid(): string {
  * @param obj The object to test if it is empty.
  * @returns Null if the object is empty, otherwise the object is returned.
  */
-export function getNullObject(obj: any): any {
+export function getNullObject<T>(obj: T) {
   return isEmptyObject(obj) ? null : obj
 }
 
@@ -1093,8 +1094,8 @@ export function runOnAllMembers(
 /**
  * Searches the object looking for the first array it finds.
  * If the object passed in is already an array, it is returned.
- * @param {object} obj The object to look for the array.
- * @returns {any[]} Returns obj if it is an array, or if obj is an object, the first array found is returned. [] if none found.
+ * @param obj The object to look for the array.
+ * @returns Returns obj if it is an array, or if obj is an object, the first array found is returned. [] if none found.
  */
 export function searchObjectForArray(obj: any): any[] {
   if (isArray(obj)) {

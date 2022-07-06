@@ -68,3 +68,5 @@ export class CaptureResponse<T> implements ICaptureResponse<T> {
     return false
   }
 }
+
+export type CaptureResponseType<T> = InstanceType<typeof CaptureResponse>

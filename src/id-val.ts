@@ -13,9 +13,7 @@ export class IdVal<Tid = string, Tval = string> implements IIdVal<Tid, Tval> {
   }
 }
 
-export type IdValObj<Tid = string, Tval = string> = {
+export type IdValType<Tid = string, Tval = string> = {
   id: Tid
   val: Tval
 }
-
-export type IdValString = IdValObj<string, string>

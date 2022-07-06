@@ -1,10 +1,10 @@
 import { IdApi } from "./api-interfaces"
 
-export class IdName<T = string> implements IdApi<T> {
-  id: T
+export class IdName<Tid = string> implements IdApi<Tid> {
+  id: Tid
   name: string
 
-  constructor(id: T, name: string) {
+  constructor(id: Tid, name: string) {
     this.id = id
     this.name = name
   }
@@ -16,9 +16,7 @@ export class IdNameNumber extends IdName<number> {
   }
 }
 
-export type IdNameObj<T = string> = {
-  id: T
+export type IdNameType<Tid = string> = {
+  id: Tid
   name: string
 }
-
-export type IdNameString = IdNameObj<string>
