@@ -1,27 +1,27 @@
 import { ICreatedBy, IUpdatedBy } from "./api-interfaces"
 import { IdVal } from "./id-val"
-import { NameValType } from "./name-val"
+import { INameVal, NameValType } from "./name-val"
 import { isObject } from "./skky"
 
-export interface IConfig extends IdVal<number, string>, ICreatedBy, IUpdatedBy {
-  userid: number
-  name: string
+export interface IConfig<Tid = string, Tval = boolean> extends IdVal<Tid, Tval>, INameVal<Tval>, ICreatedBy, IUpdatedBy {
+  userid: Tid
 }
 
-export class Config implements IConfig {
-  id = 0
-  userid = 0
+export default class Config<Tid = string, Tval = boolean> implements IConfig<Tid, Tval> {
+  id!: Tid
+  userid!: Tid
   name = ''
-  val = ''
+  val!: Tval
   updatedby = 'Config'
   updated = new Date()
   createdby = 'Config'
   created = new Date()
 
-  constructor(id = 0,
-    userid = 0,
+  constructor(
+    id: Tid,
+    userid: Tid,
     name = '',
-    val = '',
+    val: Tval,
     updatedby = 'Config',
     updated = new Date(),
     createdby = 'Config',
@@ -42,7 +42,7 @@ export class Config implements IConfig {
     }
   }
 
-  copyFromDatabase(dbtp: IConfig) {
+  copyFromDatabase(dbtp: IConfig<Tid, Tval>) {
     this.id = dbtp.id
     this.userid = dbtp.userid
     this.name = dbtp.name
@@ -53,10 +53,21 @@ export class Config implements IConfig {
     this.created = dbtp.created
   }
 
-  api(): NameValType {
+  api(): NameValType<Tval> {
     return {
       name: this.name,
       val: this.val
     }
   }
+}
+
+export type ConfigType<Tid = string, Tval = boolean> = {
+  id: Tid
+  userid: Tid
+  name: string
+  val: Tval
+  updatedby: string
+  updated: Date
+  createdby: string
+  created: Date
 }
