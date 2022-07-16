@@ -1,23 +1,5 @@
-export type StringOrStringArray = string | string[]
-export type fetchParams = {
-  url: string, method: string, body?: any, fname?: string, bearerToken?: string
-}
-
-export class GaHttpError extends Error {
-  status = 0
-  statusText = ""
-  name = "GaHttpError"
-  type: ResponseType = "basic"
-
-  constructor(m: string, res: Response) {
-    super(m)
-    Object.setPrototypeOf(this, new.target.prototype)
-
-    this.status = res.status
-    this.statusText = res.statusText
-    this.type = res.type
-  }
-}
+export type TypeOrArray<T> = T | T[]
+export type StringOrStringArray = TypeOrArray<string>
 
 /**
  * Adds obj to the list of objects, creating the list if it doesn't exist.
@@ -280,162 +262,6 @@ export function getCommaSeparatedList(stringOrArray: StringOrStringArray): strin
  */
 export function getCommaUpperList(stringOrArray: StringOrStringArray): string {
   return safestrUppercase(getCommaSeparatedList(stringOrArray))
-}
-
-/**
- * An HTTP header to support JSON API calls. An optional Bearer token can be provided as well.
- * @param bearerToken An optional security token to add as Authorization to the HTTP header.
- * @returns A JSON ready header for HTTP calls.
- */
-export function fetchHttpHeaderJson(bearerToken?: string): string[][] {
-  const header = [["Content-Type", "application/json"]]
-
-  if (hasData(bearerToken)) {
-    header.push(["Authorization", `Bearer ${bearerToken}`])
-  }
-
-  return header
-}
-
-/**
- * Handles in a prescribed way throwing an exception if the API call fails.
- * If the call is successful, returns the responding JSON.
- * @param method The HTTP method used for the call.
- * @param fname The function name of the caller.
- * @param res The HTTP Response object returned from fetch.
- * @returns The JSON object from the Response.
- */
-export function fetchHttpJsonResponseHandler(
-  method: string,
-  fname: string,
-  res: Response
-): Promise<any> {
-  if (!res.ok) {
-    console.log(
-      fname + ":",
-      "Error in HTTP",
-      method,
-      "to URL:",
-      res.url,
-      "with status code",
-      res.status,
-      "."
-    )
-
-    throw new GaHttpError(
-      `${fname}: Error in HTTP ${method} to URL: ${res.url} with status code ${res.status}.`,
-      res
-    )
-  }
-
-  const contentType = res.headers.get("content-type")
-  return contentType && safestrLowercase(contentType).includes("application/json") ? res.json() : res.text()
-}
-
-/**
- * Makes an HTTP call to an API using the given HTTP method.
- * @param url The URL endpoint of the API call.
- * @param method The HTTP method to be used.
- * @param body Optional body to send with the request. Can be a JSON object or a string.
- * @param fname The callers function name for outputting in potential error calls.
- * @param bearerToken An optional security token to add as Authorization to the HTTP header.
- * @returns The returned Response object in a Promise.
- */
-export function fetchHttp(url: string, method: string, body?: any, fname?: string, bearerToken?: string): Promise<any> {
-  const req = {
-    method,
-    headers: fetchHttpHeaderJson(bearerToken),
-  }
-
-  if (hasData(body)) {
-    (req as any).body = isObject(body) ? JSON.stringify(body) : body
-  }
-
-  return fetch(url, req)
-    .then((res) => fetchHttpJsonResponseHandler(method, safestr(fname, `fetch${method}`), res))
-}
-
-/**
- * DELETEs data to an API using an HTTP DELETE.
- * @param url The URL endpoint of the API call.
- * @param bearerToken An optional security token to add as Authorization to the HTTP header.
- * @param fname The callers function name for outputting in potential error calls.
- * @returns The returned Response object in a Promise.
- */
-export function fetchHttpDelete(
-  url: string,
-  fname?: string,
-  bearerToken?: string,
-): Promise<any> {
-  return fetchHttp(url, "DELETE", null, fname, bearerToken)
-}
-
-/**
- * Fetches data from an API using an HTTP GET.
- * Returns the JSON data from the API call.
- * @param url The URL endpoint of the API call.
- * @param fname The callers function name for outputting in potential error calls.
- * @param bearerToken An optional security token to add as Authorization to the HTTP header.
- * @returns The returned JSON object.
- */
-export function fetchHttpGet(
-  url: string,
-  fname?: string,
-  bearerToken?: string,
-): Promise<any> {
-  return fetchHttp(url, "GET", null, fname, bearerToken)
-}
-
-/**
- * PATCHs data to an API using an HTTP POST.
- * @param url The URL endpoint of the API call.
- * @param data The object of the data to pass to the API.
- * @param fname The callers function name for outputting in potential error calls.
- * @param bearerToken An optional security token to add as Authorization to the HTTP header.
- * @returns The returned Response object in a Promise.
- */
-export function fetchHttpPatch(
-  url: string,
-  data: object,
-  fname?: string,
-  bearerToken?: string,
-): Promise<any> {
-  return fetchHttp(url, "PATCH", data, fname, bearerToken)
-}
-
-/**
- * Fetches data from an API using an HTTP POST.
- * Returns the JSON data from the API call.
- * @param url The URL endpoint of the API call.
- * @param data The object of the data to pass to the API.
- * @param fname The callers function name for outputting in potential error calls.
- * @param bearerToken An optional security token to add as Authorization to the HTTP header.
- * @returns The returned JSON object.
- */
-export function fetchHttpPost(
-  url: string,
-  data: object,
-  fname?: string,
-  bearerToken?: string,
-): Promise<any> {
-  return fetchHttp(url, "POST", data, fname, bearerToken)
-}
-
-/**
- * PUTs data to an API using an HTTP POST.
- * @param url The URL endpoint of the API call.
- * @param data The object of the data to pass to the API.
- * @param fname The callers function name for outputting in potential error calls.
- * @param bearerToken An optional security token to add as Authorization to the HTTP header.
- * @returns The returned Response object in a Promise.
- */
-export function fetchHttpPut(
-  url: string,
-  data: object,
-  fname?: string,
-  bearerToken?: string,
-): Promise<any> {
-  return fetchHttp(url, "PUT", data, fname, bearerToken)
 }
 
 /**
@@ -958,7 +784,7 @@ export function safestrLowercase(s: string | null | undefined, trim = true): str
  * @param fname The optional function name that is the source of the operation. Used for exception logging.
  * @returns A the JSON.parsed object or undefined if there was an exception.
  */
-export function safestrToJson(strjson: string | null | undefined, fname?: string): any {
+export function safestrToJson<T>(strjson: string | null | undefined, fname?: string): T | undefined {
   try {
     return JSON.parse(safestr(strjson))
   }

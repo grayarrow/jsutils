@@ -69,6 +69,46 @@ export interface ICompanyCity extends IDate {
   website: string
 }
 
+export interface ICompanyUsersWithCount {
+  total: number
+  name: string
+  numusers: number
+  status: number
+  imageuri: string
+  imageurihref: string
+  email: string
+  createdon: Date
+}
+
+export interface IUsersWithCount {
+  _id: string
+  email: string
+  firstname: string
+  lastname: string
+  status: number
+  updatedon: Date
+  createdon: Date
+  lastlogin?: Date
+  count: number
+}
+export interface ICompanyUsersWithCount {
+  total: number
+  name: string
+  numusers: number
+  status: number
+  imageuri: string
+  imageurihref: string
+  email: string
+  createdon: Date
+}
+
+export interface ILoginWithCount {
+  email: string
+  ip: string
+  createdon: Date
+  logoutTime: Date
+}
+
 export interface IExchangeInfo extends ISymbolPriceName {
   exchange: string
   exchangeShortName: string

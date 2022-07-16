@@ -1,4 +1,4 @@
-import { fetchHttp, fetchParams } from "./skky"
+import { FetchDataTypesAllowed, fetchJson, FetchSettings } from "./fetch-http"
 
 // From https://blog.logrocket.com/react-suspense-data-fectching/
 // This will prevent a component from rendering until the data is ready.
@@ -11,7 +11,7 @@ import { fetchHttp, fetchParams } from "./skky"
  * @param promise A long running Promise to manage pending, success and error states.
  * @returns A read method to be used by Components that are wrapped in <Suspense> and <ErrorBoundary> parent components.
  */
-function wrapPromise(promise: Promise<any>) {
+function wrapPromise<TResponse>(promise: Promise<TResponse>): { read: () => TResponse } {
   let status = 'pending'
   let response: any
 
@@ -26,7 +26,7 @@ function wrapPromise(promise: Promise<any>) {
       }
     )
 
-  const read = () => {
+  const read = (): TResponse => {
     switch (status) {
       case 'pending':
         throw suspender
@@ -46,8 +46,10 @@ function wrapPromise(promise: Promise<any>) {
  * @param param A fetchParams type holding the variables to drive a fetch.
  * @returns A read() method to be used by <Suspense> and <ErrorBoundary> to show components when the data is ready.
  */
-export default function fetchData({url, method, body, fname, bearerToken}: fetchParams) {
-  const promise = fetchHttp(url, method, body, fname, bearerToken)
+export default function fetchData<Tdata extends FetchDataTypesAllowed, Tret>(
+  { url, method, data, fname, bearerToken }: FetchSettings
+) {
+  const promise = fetchJson(url, method, data, fname, bearerToken)
 
   return wrapPromise(promise)
 }
