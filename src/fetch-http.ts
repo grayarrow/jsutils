@@ -33,8 +33,7 @@ export class GrayArrowHttpError extends Error {
  * @returns A JSON ready header for HTTP calls.
  */
 export function getHttpHeaderJson(bearerToken?: string) {
-  const headers = new Headers()
-  headers.append("Content-Type", "application/json")
+  const headers = new Headers({ "Content-Type": "application/json" })
 
   if (hasData(bearerToken)) {
     headers.append("Authorization", `Bearer ${bearerToken}`)
@@ -60,15 +59,13 @@ export async function fetchHttp<Tdata extends FetchDataTypesAllowed | undefined 
   bearerToken?: string,
   settings?: FetchSettings<Tdata>
 ) {
-  if (!hasData(fname)) {
+  if (!fname || !hasData(fname)) {
     fname = 'fetchHttp'
   }
 
   if (!hasData(url)) {
     throw new Error(`${fname} passed an empty URL.`)
   }
-
-  let response: Response | undefined
 
   try {
     const req: RequestInit = {
@@ -80,19 +77,20 @@ export async function fetchHttp<Tdata extends FetchDataTypesAllowed | undefined 
       req.body = isObject(data) || isArray(data) ? JSON.stringify(data) : String(data)
     }
 
-    response = await fetch(url, req)
+    const response = await fetch(url, req)
+    if (!response.ok) {
+      throw new GrayArrowHttpError(`${fname!}: Error in HTTP ${method} to URL: ${url} with status code ${response.status}.`, fname, response)
+    }
+
+    return response
   }
   catch (err) {
-    throw new GrayArrowHttpError((err as any).message, fname!, response)
+    if (err instanceof GrayArrowHttpError) {
+      throw err
+    }
+
+    throw new GrayArrowHttpError((err as any).message, fname)
   }
-
-  if (!response.ok) {
-    const errToThrow = `${fname!}: Error in HTTP ${method} to URL: ${url} with status code ${response.status}.`
-
-    throw new GrayArrowHttpError(errToThrow, fname!, response)
-  }
-
-  return response
 }
 
 export async function fetchData<Tdata extends FetchDataTypesAllowed>(
@@ -105,7 +103,7 @@ export async function fetchData<Tdata extends FetchDataTypesAllowed>(
 ) {
   const resp = await fetchHttp(url, method, data, fname, bearerToken, settings)
 
-  return resp.text()
+  return await resp.text()
 }
 
 export async function fetchJson<Tdata extends FetchDataTypesAllowed | undefined, Tret>(
@@ -118,7 +116,7 @@ export async function fetchJson<Tdata extends FetchDataTypesAllowed | undefined,
 ): Promise<Tret> {
   const resp = await fetchHttp(url, method, data, fname, bearerToken, settings)
 
-  return resp.json()
+  return await resp.json()
 }
 
 /**

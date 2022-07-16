@@ -581,3 +581,11 @@ export interface ISectorsHistorical extends IDate {
   servicesChangesPercentage: number
   technologyChangesPercentage: number
 }
+
+export interface ITickerSearch extends ISymbolName {
+  full_name: string
+  description: string
+  exchange: string
+  ticker: string
+  type: string
+}
