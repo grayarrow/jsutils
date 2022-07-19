@@ -1,3 +1,4 @@
+import { IdName } from './id-name'
 import { isObject } from './skky'
 
 export interface ISymbol {
@@ -54,16 +55,20 @@ export interface IAssetQuoteResponse extends ISymbolPriceVolume, ISymbolName {
   timestamp: number // 1624635044
 }
 
+export type PolitiscaleName = 'climate' | 'freeSpeech' | 'religion'
+
 export interface IPolitiscale {
-  name: string
+  name: PolitiscaleName
   rangeValue: number
 }
+export interface IHasPolitiscales {
+  scales?: IPolitiscale[]
+}
 
-export interface ICompanyCity extends IDate {
+export interface ICompanyCity extends IDate, IHasPolitiscales {
   description: string
   imageUrl: string
   name: string
-  scales: IPolitiscale[]
   slug: string
   ticker: string
   website: string
@@ -183,7 +188,7 @@ export interface ICompanyFinancialRatios {
   priceFairValueTTM: number
 }
 
-export interface ICompanyInfo {
+export interface ICompanyInfo extends IHasPolitiscales {
   id: string
   exchange: string
   industry: string
@@ -196,6 +201,21 @@ export interface ICompanyInfo {
   val: IExchangeInfo
   createdby: string
   updatedby: string
+}
+
+export interface ICompanyScales extends IdName, Required<IHasPolitiscales> {
+  ticker: string
+  description: string
+  type: string
+  sector: string
+  industry: string
+  exchange: string
+  exchangeShortName: string
+  website: string
+  ceo: string
+  imageUrl: string
+  fullTimeEmployees: number
+  ipoDate: string
 }
 
 export interface ICompanyProfile extends ISymbolPrice {
@@ -586,6 +606,11 @@ export interface ITickerSearch extends ISymbolName {
   full_name: string
   description: string
   exchange: string
+  ticker: string
+  type: string
+}
+
+export interface ITickerType extends IdName {
   ticker: string
   type: string
 }
