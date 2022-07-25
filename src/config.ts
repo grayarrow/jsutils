@@ -1,9 +1,10 @@
 import { ICreatedBy, IUpdatedBy } from "./api-interfaces"
 import { IdVal } from "./id-val"
-import { INameVal, NameValType } from "./name-val"
+import { NameValType } from "./name-val"
 import { isObject } from "./skky"
+import { IName } from "./types"
 
-export interface IConfig<Tid = string, Tval = boolean> extends IdVal<Tid, Tval>, INameVal<Tval>, ICreatedBy, IUpdatedBy {
+export interface IConfig<Tid = string, Tval = boolean> extends IdVal<Tid, Tval>, IName<string>, ICreatedBy, IUpdatedBy {
   userid: Tid
 }
 

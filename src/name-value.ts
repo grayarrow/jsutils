@@ -1,24 +1,25 @@
-export interface INameValue<T = string> {
-  name: string
-  value: T
+import { IName } from "./types"
+
+export interface INameValue<Tvalue = string, Tname = string> extends IName<Tname> {
+  value: Tvalue
 }
 
 export interface INameValueBoolean extends INameValue<boolean> { }
 export interface INameValueNumber extends INameValue<number> { }
 
-export class NameValue<T = string> implements INameValue<T> {
+export class NameValue<Tvalue = string> implements INameValue<Tvalue> {
   name: string
-  value: T
+  value: Tvalue
 
-  constructor(name: string, value: T) {
+  constructor(name: string, value: Tvalue) {
     this.name = name
     this.value = value
   }
 }
 
-export type NameValueType<T = string> = {
+export type NameValueType<Tvalue = string> = {
   name: string
-  value: T
+  value: Tvalue
 }
 
 export type NameValueBoolean = NameValueType<boolean>

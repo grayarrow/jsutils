@@ -1,21 +1,13 @@
 import { IdName } from './id-name'
+import { INameValue } from './name-value'
 import { isObject } from './skky'
+import { IDate, IName, IPrice } from './types'
 
 export interface ISymbol {
   symbol: string
 }
 
-export interface IDate {
-  date: string
-}
-
-export interface IPrice {
-  price: number
-}
-
-export interface ISymbolName extends ISymbol {
-  name: string
-}
+export interface ISymbolName extends ISymbol, IName { }
 
 export interface ISymbolPrice extends ISymbol, IPrice { }
 export interface ISymbolPriceName extends ISymbolPrice, ISymbolName { }
@@ -57,10 +49,7 @@ export interface IAssetQuoteResponse extends ISymbolPriceVolume, ISymbolName {
 
 export type PolitiscaleName = 'climate' | 'freeSpeech' | 'religion'
 
-export interface IPolitiscale {
-  name: PolitiscaleName
-  rangeValue: number
-}
+export interface IPolitiscale extends INameValue<number, PolitiscaleName> { }
 export interface IHasPolitiscales {
   scales?: IPolitiscale[]
 }
