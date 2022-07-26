@@ -22,3 +22,6 @@ export type IdNameType<Tid = string, Tname = string> = {
 
 export interface IdNameSlug<Tid = string, Tname = string>  extends IdName<Tid, Tname>, ISlug { }
 export interface IdNameValue<Tvalue, Tid = string> extends IdName<Tid, string>, INameValue<Tvalue> { }
+
+export interface IValueChange<Tvalue = string> extends IdNameValue<Tvalue, string> { }
+export type ValueChangeHandler<Tvalue = string> = (change: IValueChange<Tvalue>) => void
