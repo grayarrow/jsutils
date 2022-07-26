@@ -1,10 +1,16 @@
 import { IdName } from './id-name'
 import { INameValue } from './name-value'
 import { isObject } from './skky'
-import { IDate, IName, IPrice } from './types'
+import { IDate, IId, IName, IPrice, ISlug, IVal, I_Id } from './types'
 
 export interface ISymbol {
   symbol: string
+}
+export interface ITicker {
+  ticker: string
+}
+export interface IVolume<T = number> {
+  volume: T
 }
 
 export interface ISymbolName extends ISymbol, IName { }
@@ -12,9 +18,7 @@ export interface ISymbolName extends ISymbol, IName { }
 export interface ISymbolPrice extends ISymbol, IPrice { }
 export interface ISymbolPriceName extends ISymbolPrice, ISymbolName { }
 
-export interface ISymbolPriceVolume extends ISymbolPrice {
-  volume: number
-}
+export interface ISymbolPriceVolume extends ISymbolPrice, IVolume { }
 
 export interface ISymbolSearch extends ISymbolName {
   currency: string
@@ -54,18 +58,14 @@ export interface IHasPolitiscales {
   scales?: IPolitiscale[]
 }
 
-export interface ICompanyCity extends IDate, IHasPolitiscales {
+export interface ICompanyCity extends IDate, IHasPolitiscales, IName, ISlug, ITicker {
   description: string
   imageUrl: string
-  name: string
-  slug: string
-  ticker: string
   website: string
 }
 
-export interface ICompanyUsersWithCount {
+export interface ICompanyUsersWithCount extends IName {
   total: number
-  name: string
   numusers: number
   status: number
   imageuri: string
@@ -74,8 +74,7 @@ export interface ICompanyUsersWithCount {
   createdon: Date
 }
 
-export interface IUsersWithCount {
-  _id: string
+export interface IUsersWithCount<Tid = string> extends I_Id<Tid> {
   email: string
   firstname: string
   lastname: string
@@ -85,9 +84,8 @@ export interface IUsersWithCount {
   lastlogin?: Date
   count: number
 }
-export interface ICompanyUsersWithCount {
+export interface ICompanyUsersWithCount extends IName {
   total: number
-  name: string
   numusers: number
   status: number
   imageuri: string
@@ -177,8 +175,7 @@ export interface ICompanyFinancialRatios {
   priceFairValueTTM: number
 }
 
-export interface ICompanyInfo extends IHasPolitiscales {
-  id: string
+export interface ICompanyInfo extends IId, IHasPolitiscales, IVal<IExchangeInfo> {
   exchange: string
   industry: string
   minmov: number
@@ -187,13 +184,11 @@ export interface ICompanyInfo extends IHasPolitiscales {
   profile: ICompanyProfile
   sector: string
   type: string
-  val: IExchangeInfo
   createdby: string
   updatedby: string
 }
 
-export interface ICompanyScales extends IdName, Required<IHasPolitiscales> {
-  ticker: string
+export interface ICompanyScales extends IdName, Required<IHasPolitiscales>, ITicker {
   description: string
   type: string
   sector: string
@@ -264,15 +259,19 @@ export interface IPlotPricesWithMidpoint extends ISymbol {
   requestDate: number
 }
 
-export interface IPriceHistory extends IDate {
+export interface IPriceBar<Tdate = string> extends IDate<Tdate>, IVolume {
   // symbol: string
   // date: string      // 2021-06-24,
   open: number      // 221.16,
   high: number      // 227.45,
   low: number       // 211.6,
   close: number     // 212.31,
-  volume: number    // 3866565,
+  // volume: number    // 3866565,
 }
+export interface IPriceBarSymbol<Tdate = string> extends IPriceBar<Tdate>, ISymbol { }
+export interface IPriceBarTicker<Tdate = string> extends IPriceBar<Tdate>, ITicker { }
+
+export interface IPriceHistory<Tdate = string> extends IPriceBar<Tdate> { }
 
 export interface IPriceHistoricalFull extends IPriceHistory {
   adjClose: number          // 212.31,
@@ -591,15 +590,13 @@ export interface ISectorsHistorical extends IDate {
   technologyChangesPercentage: number
 }
 
-export interface ITickerSearch extends ISymbolName {
+export interface ITickerSearch extends ISymbolName, ITicker {
   full_name: string
   description: string
   exchange: string
-  ticker: string
   type: string
 }
 
-export interface ITickerType extends IdName {
-  ticker: string
+export interface ITickerType extends IdName, ITicker {
   type: string
 }

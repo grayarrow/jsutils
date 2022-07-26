@@ -1,8 +1,6 @@
-import { IdApi } from "./api-interfaces"
+import { IId, IValue } from "./types"
 
-export interface IIdValue<Tid = string, Tvalue = string> extends IdApi<Tid> {
-  value: Tvalue
-}
+export interface IIdValue<Tid = string, Tvalue = string> extends IId<Tid>, IValue<Tvalue> { }
 
 export class IdValue<Tid = string, Tvalue = string> implements IIdValue<Tid, Tvalue> {
   id: Tid

@@ -1,8 +1,6 @@
-import { IName } from "./types"
+import { IName, IVal } from "./types"
 
-export interface INameVal<Tval = string, Tname = string> extends IName<Tname> {
-  val: Tval
-}
+export interface INameVal<Tval = string, Tname = string> extends IName<Tname>, IVal<Tval> { }
 
 export class NameVal<Tval = string, Tname = string> implements INameVal<Tval, Tname> {
   name: Tname

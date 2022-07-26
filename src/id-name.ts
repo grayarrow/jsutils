@@ -1,7 +1,9 @@
-import { IdApi } from "./api-interfaces"
-import { IName } from "./types"
+import { INameValue } from "./name-value"
+import { IId, IName, ISlug } from "./types"
 
-export class IdName<Tid = string, Tname = string> implements IdApi<Tid>, IName<Tname> {
+export interface IIdName<Tid = string, Tname = string> extends IId<Tid>, IName<Tname> { }
+
+export class IdName<Tid = string, Tname = string> implements IIdName<Tid, Tname> {
   id: Tid
   name: Tname
 
@@ -11,17 +13,12 @@ export class IdName<Tid = string, Tname = string> implements IdApi<Tid>, IName<T
   }
 }
 
-export class IdNameNumber extends IdName<number> {
-  constructor(id = 0, name = '') {
-    super(id, name)
-  }
-}
+export class IdNameNumber extends IdName<number> { }
 
 export type IdNameType<Tid = string, Tname = string> = {
   id: Tid
   name: Tname
 }
 
-export interface IdNameSlug<Tid = string, Tname = string>  extends IdName<Tid, Tname> {
-  slug: string
-}
+export interface IdNameSlug<Tid = string, Tname = string>  extends IdName<Tid, Tname>, ISlug { }
+export interface IdNameValue<Tvalue, Tid = string> extends IdName<Tid, string>, INameValue<Tvalue> { }

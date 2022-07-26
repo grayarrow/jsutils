@@ -1,4 +1,3 @@
-export * from './src/api-interfaces'
 export * from './src/CaptureResponse'
 export * from './src/config'
 export * from './src/fetch-http'

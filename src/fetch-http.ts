@@ -1,4 +1,4 @@
-import { hasData, safestrLowercase, isObject, safestr, isArray } from "./skky"
+import { hasData, isObject, isArray } from "./skky"
 
 export type HttpMethod = 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT'
 
