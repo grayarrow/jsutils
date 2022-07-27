@@ -1,8 +1,9 @@
 import { hasData, isObject, isArray } from "./skky"
+import { JSONValue } from "./types"
 
 export type HttpMethod = 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT'
 
-export type FetchDataTypesAllowed = object | Array<any> | string | number
+export type FetchDataTypesAllowed = JSONValue | object
 
 export type FetchSettings<Tdata extends FetchDataTypesAllowed | undefined = undefined> = {
   url: string,

@@ -23,5 +23,11 @@ export type IdNameType<Tid = string, Tname = string> = {
 export interface IdNameSlug<Tid = string, Tname = string>  extends IdName<Tid, Tname>, ISlug { }
 export interface IdNameValue<Tvalue, Tid = string> extends IdName<Tid, string>, INameValue<Tvalue> { }
 
+/**
+ * Used for sending data to a parent handler in a structured way with contextual id and name.
+ */
 export interface IValueChange<Tvalue = string> extends IdNameValue<Tvalue, string> { }
-export type ValueChangeHandler<Tvalue = string> = (change: IValueChange<Tvalue>) => void
+/**
+ * Used to pass structured data back to a caller. Especially for event handlers.
+ */
+export type ValueChangeHandler<Tvalue = string, TReturn = void> = (change: IValueChange<Tvalue>) => TReturn

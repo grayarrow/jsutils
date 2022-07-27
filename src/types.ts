@@ -1,4 +1,5 @@
 export type AnyFixLater = any
+export type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
 
 export type Concrete<Type> = {
   [Property in keyof Type]-?: Type[Property]
