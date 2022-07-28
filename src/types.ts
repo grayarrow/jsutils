@@ -55,6 +55,10 @@ export interface ISlug {
   slug: string
 }
 
+export interface IType<T = string> {
+  type: T
+}
+
 export interface IVal<T> {
   val: T
 }
