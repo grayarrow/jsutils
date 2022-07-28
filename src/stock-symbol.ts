@@ -1,7 +1,7 @@
 import { IdName } from './id-name'
 import { INameValue } from './name-value'
 import { isObject } from './skky'
-import { IDate, IId, IName, IPrice, ISlug, IVal, I_Id } from './types'
+import { IDate, IId, IName, IPrice, ISlug, IType, IVal, I_Id } from './types'
 
 export interface ISymbol {
   symbol: string
@@ -175,7 +175,7 @@ export interface ICompanyFinancialRatios {
   priceFairValueTTM: number
 }
 
-export interface ICompanyInfo extends IId, IHasPolitiscales, IVal<IExchangeInfo> {
+export interface ICompanyInfo extends IId, IHasPolitiscales, IVal<IExchangeInfo>, IType {
   exchange: string
   industry: string
   minmov: number
@@ -183,14 +183,12 @@ export interface ICompanyInfo extends IId, IHasPolitiscales, IVal<IExchangeInfo>
   pricescale: number
   profile: ICompanyProfile
   sector: string
-  type: string
   createdby: string
   updatedby: string
 }
 
-export interface ICompanyScales extends IdName, Required<IHasPolitiscales>, ITicker {
+export interface ICompanyScales extends IdName, Required<IHasPolitiscales>, ITicker, IType {
   description: string
-  type: string
   sector: string
   industry: string
   exchange: string
@@ -590,13 +588,10 @@ export interface ISectorsHistorical extends IDate {
   technologyChangesPercentage: number
 }
 
-export interface ITickerSearch extends ISymbolName, ITicker {
+export interface ITickerSearch extends ISymbolName, ITicker, IType, IHasPolitiscales {
   full_name: string
   description: string
   exchange: string
-  type: string
 }
 
-export interface ITickerType extends IdName, ITicker {
-  type: string
-}
+export interface ITickerType extends IdName, ITicker, IType { }
