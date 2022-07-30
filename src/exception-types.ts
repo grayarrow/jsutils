@@ -15,8 +15,8 @@ export class GrayArrowException<Tobj = string> extends Error {
   }
 }
 
-export class GrayArrowExceptionHttp extends GrayArrowException<Response> {
-  constructor(m: string, functionNameSource: string, response?: Response) {
+export class GrayArrowExceptionHttp<Tobj = Response> extends GrayArrowException<Tobj> {
+  constructor(m: string, functionNameSource: string, response?: Tobj) {
     super(m, hasData(functionNameSource) ? functionNameSource : 'GrayArrowHttpError', response)
 
     Object.setPrototypeOf(this, new.target.prototype)

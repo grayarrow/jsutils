@@ -1,3 +1,4 @@
+import { ICaptureResponse } from "./CaptureResponse"
 import { GrayArrowExceptionHttp } from "./exception-types"
 import { hasData, isObject, isArray } from "./skky"
 import { JSONValue } from "./types"
@@ -55,6 +56,7 @@ export async function fetchHttp<Tdata extends FetchDataTypesAllowed | undefined 
     throw new Error(`${fname} passed an empty URL.`)
   }
 
+  let response: Response
   try {
     const req: RequestInit = {
       method,
@@ -65,12 +67,7 @@ export async function fetchHttp<Tdata extends FetchDataTypesAllowed | undefined 
       req.body = isObject(data) || isArray(data) ? JSON.stringify(data) : String(data)
     }
 
-    const response = await fetch(url, req)
-    if (!response.ok) {
-      throw new GrayArrowExceptionHttp(`${fname!}: Error in HTTP ${method} to URL: ${url} with status code ${response.status}.`, fname, response)
-    }
-
-    return response
+    response = await fetch(url, req)
   }
   catch (err) {
     if (err instanceof GrayArrowExceptionHttp) {
@@ -79,6 +76,24 @@ export async function fetchHttp<Tdata extends FetchDataTypesAllowed | undefined 
 
     throw new GrayArrowExceptionHttp((err as any).message, fname)
   }
+
+  if (!response) {
+    throw new GrayArrowExceptionHttp(`${fname!}: NO response in HTTP ${method} to URL: ${url}.`, fname)
+  }
+
+  if (!response.ok) {
+    let captureResponse: ICaptureResponse | undefined
+    if (401 === response.status) {
+      try {
+        captureResponse = await response.json()
+      }
+      catch (jsonerr) { }
+    }
+
+    throw new GrayArrowExceptionHttp(`${fname!}: Error in HTTP ${method} to URL: ${url} with status code ${response.status}.`, fname, { response, captureResponse })
+  }
+
+  return response
 }
 
 export async function fetchData<Tdata extends FetchDataTypesAllowed>(

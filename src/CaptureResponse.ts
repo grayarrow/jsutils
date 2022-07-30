@@ -1,8 +1,9 @@
 import { GrayArrowException } from "./exception-types"
 import { isNullOrUndefined, isObject, safestrLowercase } from "./skky"
 
-export interface ICaptureResponse<T> {
+export interface ICaptureResponse<T = any> {
   id: number
+  ts: number
   msg: string
   responseCode: number
   result: string
@@ -10,7 +11,7 @@ export interface ICaptureResponse<T> {
   obj?: T
 }
 
-export class CaptureResponse<T> implements ICaptureResponse<T> {
+export class CaptureResponse<T = any> implements ICaptureResponse<T> {
   id = +new Date()
   ts = this.id
 
