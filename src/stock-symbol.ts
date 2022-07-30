@@ -64,16 +64,6 @@ export interface ICompanyCity extends IDate, IHasPolitiscales, IName, ISlug, ITi
   website: string
 }
 
-export interface ICompanyUsersWithCount extends IName {
-  total: number
-  numusers: number
-  status: number
-  imageuri: string
-  imageurihref: string
-  email: string
-  createdon: Date
-}
-
 export interface IUsersWithCount<Tid = string> extends I_Id<Tid> {
   email: string
   firstname: string

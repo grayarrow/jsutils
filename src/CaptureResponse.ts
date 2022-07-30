@@ -1,4 +1,5 @@
-import { isObject, safestrLowercase } from "./skky"
+import { GrayArrowException } from "./exception-types"
+import { isNullOrUndefined, isObject, safestrLowercase } from "./skky"
 
 export interface ICaptureResponse<T> {
   id: number
@@ -10,7 +11,8 @@ export interface ICaptureResponse<T> {
 }
 
 export class CaptureResponse<T> implements ICaptureResponse<T> {
-  id = 0
+  id = +new Date()
+  ts = this.id
 
   // constructor items
   msg = ''
@@ -32,16 +34,33 @@ export class CaptureResponse<T> implements ICaptureResponse<T> {
     this.result = 'Error'
     this.responseCode = -1
 
-    switch (typeof (errobj)) {
-      case 'string':
-        this.msg = errobj
-        break
-      case 'number':
-        this.responseCode = errobj
-        break
-      default:
-        this.obj = errobj
-        break
+    if (errobj) {
+      if (isObject(errobj) && errobj instanceof GrayArrowException) {
+        if (!isNullOrUndefined(errobj.responseCode)) {
+          this.responseCode = errobj.responseCode!
+        }
+
+        if (errobj.message) {
+          this.msg = errobj.message
+        }
+
+        if (errobj.obj) {
+          this.obj = errobj.obj
+        }
+      }
+      else {
+        switch (typeof (errobj)) {
+          case 'string':
+            this.msg = errobj
+            break
+          case 'number':
+            this.responseCode = errobj
+            break
+          default:
+            this.obj = errobj
+            break
+        }
+      }
     }
   }
 

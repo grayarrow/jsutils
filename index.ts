@@ -1,5 +1,6 @@
 export * from './src/CaptureResponse'
 export * from './src/config'
+export * from './src/exception-types'
 export * from './src/fetch-http'
 export * from './src/fetch-promise-status'
 export * from './src/html-helper'

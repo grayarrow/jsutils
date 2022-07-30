@@ -1,3 +1,4 @@
+import { GrayArrowExceptionHttp } from "./exception-types"
 import { hasData, isObject, isArray } from "./skky"
 import { JSONValue } from "./types"
 
@@ -12,20 +13,6 @@ export type FetchSettings<Tdata extends FetchDataTypesAllowed | undefined = unde
   fname?: string,
   bearerToken?: string
   statusCodesToBypassErrorHandler?: number[]
-}
-
-export class GrayArrowHttpError extends Error {
-  functionNameSource: string
-  response?: Response
-
-  constructor(m: string, functionNameSource: string, res?: Response) {
-    super(m)
-
-    this.functionNameSource = hasData(functionNameSource) ? functionNameSource : 'GrayArrowHttpError'
-    this.response = res
-
-    Object.setPrototypeOf(this, new.target.prototype)
-  }
 }
 
 /**
@@ -80,17 +67,17 @@ export async function fetchHttp<Tdata extends FetchDataTypesAllowed | undefined 
 
     const response = await fetch(url, req)
     if (!response.ok) {
-      throw new GrayArrowHttpError(`${fname!}: Error in HTTP ${method} to URL: ${url} with status code ${response.status}.`, fname, response)
+      throw new GrayArrowExceptionHttp(`${fname!}: Error in HTTP ${method} to URL: ${url} with status code ${response.status}.`, fname, response)
     }
 
     return response
   }
   catch (err) {
-    if (err instanceof GrayArrowHttpError) {
+    if (err instanceof GrayArrowExceptionHttp) {
       throw err
     }
 
-    throw new GrayArrowHttpError((err as any).message, fname)
+    throw new GrayArrowExceptionHttp((err as any).message, fname)
   }
 }
 
