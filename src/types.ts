@@ -13,6 +13,8 @@ export type CreateMutable<Type> = {
   -readonly [Property in keyof Type]: Type[Property]
 }
 
+export type ModifyType<T, R> = Omit<T, keyof R> & R
+
 export interface ICreatedBy {
   createdby: string
   created: Date

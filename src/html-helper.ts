@@ -1,11 +1,14 @@
+export type ColorRange = readonly [string, string]
+
 /**
  * Returns an HTML #FFFFFF color that is the percent between the start and end colors provided.
- * @param startColor The starting color for the gradient in HTML #FFFFFF format (# optional).
- * @param endColor The ending color for the gradient in HTML #FFFFFF format (# optional).
+ * @param colorRange The starting and ending colors for the gradient scale in HTML #FFFFFF format (# optional).
  * @param percent The percentage of the gradient scale you want returned.
  * @returns An HTML #FFFFFF formatted color that is the middle color of the percent between the start and end colors.
  */
-export function interpolateColor(startColor: string, endColor: string, percent: number) {
+export function InterpolateColorRange(colorRange: ColorRange, percent: number) {
+  let [startColor, endColor] = colorRange
+
   percent = percent / 100
 
   if (startColor.startsWith('#')) {
@@ -27,4 +30,21 @@ export function interpolateColor(startColor: string, endColor: string, percent: 
       .toString(16)
       .padStart(6, '0')
   )
+}
+
+/**
+ * Returns an HTML #FFFFFF color range based on the colorRange and the weights provided.
+ * Used to get the gradients used for Politiscales.
+ * @param colorRange The starting and ending colors for the gradient scale in HTML #FFFFFF format (# optional).
+ * @param startWeight The weight for calculating the starting color.
+ * @param endWeight The weight for calculating the ending color.
+ * @returns An HTML #FFFFFF formatted color that is the middle color of the percent between the start and end colors.
+ */
+ export function InterpolateWeightedColorRange(colorRange: ColorRange, startWeight: number, endWeight: number) {
+  const range: ColorRange = [
+    InterpolateColorRange(colorRange, startWeight),
+    InterpolateColorRange(colorRange, endWeight)
+  ]
+
+  return range
 }

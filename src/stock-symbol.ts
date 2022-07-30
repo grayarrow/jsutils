@@ -165,7 +165,7 @@ export interface ICompanyFinancialRatios {
   priceFairValueTTM: number
 }
 
-export interface ICompanyInfo extends IId, IHasPolitiscales, IVal<IExchangeInfo>, IType {
+export interface ICompanyInfo extends I_Id, IHasPolitiscales, IVal<IExchangeInfo>, IType {
   exchange: string
   industry: string
   minmov: number
@@ -177,7 +177,7 @@ export interface ICompanyInfo extends IId, IHasPolitiscales, IVal<IExchangeInfo>
   updatedby: string
 }
 
-export interface ICompanyScales extends IdName, Required<IHasPolitiscales>, ITicker, IType {
+export interface ICompanyScales extends I_Id, IName, Required<IHasPolitiscales>, ITicker, IType {
   description: string
   sector: string
   industry: string
