@@ -1,3 +1,5 @@
+import { AnyFixLater } from "./types"
+
 export type TypeOrArray<T> = T | T[]
 export type StringOrStringArray = TypeOrArray<string>
 
@@ -929,7 +931,10 @@ export function searchObjectForArray(obj: any): any[] {
   }
 
   if (isObject(obj)) {
-    return Object.values(obj).find((x) => isArray(x)) as any[]
+    const found = Object.values(obj).find((x) => isArray(x))
+    if (found) {
+      return found as any[]
+    }
   }
 
   return []
