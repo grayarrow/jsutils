@@ -89,4 +89,4 @@ export class CaptureResponse<T = any> implements ICaptureResponse<T> {
   }
 }
 
-export type CaptureResponseType<T> = InstanceType<typeof CaptureResponse>
+// export type CaptureResponseType<T> = InstanceType<typeof CaptureResponse>
