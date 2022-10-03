@@ -12,7 +12,7 @@ export var LocalStorage = {
    * @param key The key of the localStorage item to retrieve.
    * @returns The value stored at key, an object if one is detected, otherwise null if the key cannot be found.
    */
-  getItem<T extends object>(key: string): T | undefined {
+  getItem<T extends object>(key: string): T | string | undefined {
     const val = localStorage.getItem(key)
     if (val) {
       const sval = safestrTrim(val)
@@ -20,9 +20,9 @@ export var LocalStorage = {
         || (sval.startsWith('[') && sval.endsWith(']'))) {
         return safestrToJson(sval)
       }
-    }
 
-    // return val;
+      return val
+    }
   },
 
   /**
