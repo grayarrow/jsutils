@@ -897,8 +897,8 @@ export function renameProperty(obj: any, oldKey: any, newKey: any): object {
  * @param mustHaveValue If true, the property must have a value in order for func() to be called.
  * @returns The original object with function having been run on each property.
  */
-export function runOnAllMembers(
-  obj: object,
+export function runOnAllMembers<T extends object = any>(
+  obj: T,
   func: (key: string, value: any) => any,
   mustHaveValue = true
 ) {
