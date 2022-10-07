@@ -707,16 +707,16 @@ export function getNullObject<T>(obj: T) {
 /**
  * Tests if the passed in arr is in fact an array that is not undefined or null.
  * If it is, the ifNull value is used. If there is no ifNull passed in, an empty array is returned.
- * @param arr An array to test for not being null or undefined.
+ * @param arr An array to test for not being null or undefined. If it is an object, it is wrapped in an array.
  * @param ifNull If the array is null or undefined, return this value. Defaults to [].
- * @returns A guaranteed array to be nonnull. Returns ifNull if the array does not have data. Or [] if ifNull is not declared.
+ * @returns A guaranteed array to be nonNull. Returns ifNull when the array does not have data. Or [] if ifNull is not declared.
  */
-export function safeArray<T>(arr: T[] | null | undefined, ifNull?: T[]): T[] {
-  if (isArray(arr)) {
-    return arr!
+export function safeArray<T>(arr: T | T[] | null | undefined, ifNull?: T[]): T[] {
+  if (isNullOrUndefined(arr)) {
+    return isArray(ifNull) ? (ifNull!) : []
   }
 
-  return isArray(ifNull) ? (ifNull!) : []
+  return isArray(arr) ? arr as T[] : [arr as T]
 }
 
 /**
