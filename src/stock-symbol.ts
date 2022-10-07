@@ -578,10 +578,11 @@ export interface ISectorsHistorical extends IDate {
   technologyChangesPercentage: number
 }
 
-export interface ITickerSearch extends ISymbolName, ITicker, IType, IHasPolitiscales {
+export interface ITickerSearch extends ISymbolName, ITicker, IType {
   full_name: string
   description: string
   exchange: string
 }
+export interface ITickerSearchWithScales extends ITickerSearch, IHasPolitiscales { }
 
 export interface ITickerType extends IdName, ITicker, IType { }
