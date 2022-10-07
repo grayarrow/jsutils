@@ -361,12 +361,17 @@ export function getNumberFormatted(
   maxDecimalPlaces?: number,
   minDecimalPlaces?: number
 ): number {
-  if (isString(num, 1) && !isNaN(num)) {
-    num = +num
+  if (isString(num, 1)) {
+    const newnum = num.replace(',', '')
+
+    if (isString(newnum, 1)) {
+      num = +newnum
+    }
   }
 
   if (!isNullOrUndefined(num) && isNumber(num) && (!isNullOrUndefined(maxDecimalPlaces) || !isNullOrUndefined(minDecimalPlaces))) {
-    return parseFloat(getNumberString(num, maxDecimalPlaces, minDecimalPlaces))
+    const mystr = getNumberString(num, maxDecimalPlaces, minDecimalPlaces)
+    return parseFloat(mystr.replace(',', ''))
   }
 
   return isNumber(num) ? num : 0
@@ -384,8 +389,12 @@ export function getNumberString(
   maxDecimalPlaces?: number,
   minDecimalPlaces?: number
 ): string {
-  if (isString(num, 1) && !isNaN(num)) {
-    num = +num
+  if (isString(num, 1)) {
+    const newnum = num.replace(',', '')
+
+    if (isString(newnum, 1)) {
+      num = +newnum
+    }
   }
 
   maxDecimalPlaces = maxDecimalPlaces || 0
