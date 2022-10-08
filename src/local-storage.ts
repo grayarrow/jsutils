@@ -1,4 +1,4 @@
-import { isObject, safeJsonToString, safestrToJson, safestrTrim } from "./skky"
+import { hasData, isObject, safeJsonToString, safestrToJson, safestrTrim } from "./skky"
 
 export var LocalStorage = {
   /**
@@ -12,17 +12,18 @@ export var LocalStorage = {
    * @param key The key of the localStorage item to retrieve.
    * @returns The value stored at key, an object if one is detected, otherwise null if the key cannot be found.
    */
-  getItem<T extends object>(key: string): T | string | undefined {
-    const val = localStorage.getItem(key)
-    if (val) {
-      const sval = safestrTrim(val)
-      if ((sval.startsWith('{') && sval.endsWith('}'))
-        || (sval.startsWith('[') && sval.endsWith(']'))) {
-        return safestrToJson(sval)
+   getItem<T extends object>(key: string): T | undefined {
+    const val = safestrTrim(this.getString(key))
+    if (hasData(val)) {
+      if ((val.startsWith('{') && val.endsWith('}'))
+        || (val.startsWith('[') && val.endsWith(']'))) {
+        return safestrToJson(val)
       }
-
-      return val
     }
+  },
+
+  getString(key: string) {
+    return localStorage.getItem(key)
   },
 
   /**

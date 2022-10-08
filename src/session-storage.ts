@@ -1,4 +1,5 @@
-import { isArray, isObject, safeJsonToString, safestrToJson, safestrTrim } from "./skky"
+import { GrayArrowException } from "./exception-types"
+import { hasData, isArray, isObject, safeJsonToString, safestrToJson, safestrTrim } from "./skky"
 
 export var SessionStorage = {
   /**
@@ -12,19 +13,19 @@ export var SessionStorage = {
    * @param key The key of the sessionStorage item to retrieve.
    * @returns The value stored at key, an object if one is detected, otherwise null if the key cannot be found.
    */
-  getItem<T extends object>(key: string): T | string | undefined {
-    const val = sessionStorage.getItem(key)
-    if (val) {
-      const sval = safestrTrim(val)
-      if ((sval.startsWith('{') && sval.endsWith('}'))
-        || (sval.startsWith('[') && sval.endsWith(']'))) {
-        return safestrToJson(sval)
+  getItem<T extends object>(key: string): T | undefined {
+    const val = safestrTrim(this.getString(key))
+    if (hasData(val)) {
+      if ((val.startsWith('{') && val.endsWith('}'))
+        || (val.startsWith('[') && val.endsWith(']'))) {
+        return safestrToJson(val)
       }
-
-      return val
     }
   },
 
+  getString(key: string) {
+    return sessionStorage.getItem(key)
+  },
   /**
    * Removes a key item from sessionStorage.
    * @param key The key of the sessionStorage item to remove.
