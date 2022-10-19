@@ -1,5 +1,7 @@
-import { IName, IValue } from "./types"
+import { IName, IType, IValue } from "./types"
 
+export interface INameType<TType = string, Tname = string> extends IName<Tname>, IType<TType> { }
+export interface INameTypeValue<TValue = string, TType = string, Tname = string> extends IName<Tname>, IType<TType>, IValue<TValue> { }
 export interface INameValue<Tvalue = string, Tname = string> extends IName<Tname>, IValue<Tvalue> { }
 
 export class NameValue<Tvalue = string, Tname = string> implements INameValue<Tvalue, Tname> {
@@ -12,7 +14,18 @@ export class NameValue<Tvalue = string, Tname = string> implements INameValue<Tv
   }
 }
 
-export type NameValueType<Tvalue = string, Tname = string> = {
+export class NameValueType<TValue = string, TType = string, TName = string>
+  extends NameValue<TValue, TName>
+  implements INameTypeValue<TValue, TType, TName> {
+  type: TType
+
+  constructor(name: TName, value: TValue, type: TType) {
+    super(name, value)
+    this.type = type
+  }
+}
+
+export type NameValueAsType<Tvalue = string, Tname = string> = {
   name: Tname
   value: Tvalue
 }
