@@ -38,11 +38,11 @@ export interface IDate<T = string> {
 }
 
 export interface I_Id<T = string> {
-  _id: T
+  _id?: T
 }
 
 export interface IId<T = string> {
-  id: T
+  id?: T
 }
 
 export interface IName<T = string> {

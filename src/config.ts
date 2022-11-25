@@ -1,22 +1,17 @@
+import { IdCreatedUpdated, IIdCreatedUpdated } from "./id-created-updated"
 import { IIdName } from "./id-name"
 import { IIdVal } from "./id-val"
 import { NameValType } from "./name-val"
 import { isObject } from "./skky"
-import { ICreatedBy, IUpdatedBy } from "./types"
 
-export interface IConfig<Tid = string, Tval = boolean> extends IIdVal<Tid, Tval>, IIdName<Tid, string>, ICreatedBy, IUpdatedBy {
+export interface IConfig<Tid = string, Tval = boolean> extends IIdVal<Tid, Tval>, IIdName<Tid, string>, IIdCreatedUpdated<Tid> {
   userid: Tid
 }
 
-export default class Config<Tid = string, Tval = boolean> implements IConfig<Tid, Tval> {
-  id!: Tid
+export default class Config<Tid = string, Tval = boolean> extends IdCreatedUpdated<Tid> implements IConfig<Tid, Tval> {
   userid!: Tid
   name = ''
   val!: Tval
-  updatedby = 'Config'
-  updated = new Date()
-  createdby = 'Config'
-  created = new Date()
 
   constructor(
     id: Tid,
@@ -27,31 +22,24 @@ export default class Config<Tid = string, Tval = boolean> implements IConfig<Tid
     updated = new Date(),
     createdby = 'Config',
     created = new Date()) {
+    super(id, createdby, created, updatedby, updated)
     if (isObject(id)) {
       this.copyFromDatabase(id as any)
     }
     else {
       // constructor items
-      this.id = id
       this.userid = userid
       this.name = name
       this.val = val
-      this.updatedby = updatedby
-      this.updated = updated
-      this.createdby = createdby
-      this.created = created
     }
   }
 
   copyFromDatabase(dbtp: IConfig<Tid, Tval>) {
-    this.id = dbtp.id
+    super.copyFromDatabase(dbtp)
+
     this.userid = dbtp.userid
     this.name = dbtp.name
     this.val = dbtp.val
-    this.updatedby = dbtp.updatedby
-    this.updated = dbtp.updated
-    this.createdby = dbtp.createdby
-    this.created = dbtp.created
   }
 
   api(): NameValType<Tval> {

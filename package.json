@@ -1,6 +1,6 @@
 {
   "name": "grayarrow-jsutils",
-  "version": "1.1.52",
+  "version": "1.1.56",
   "description": "Provides basic helper utilities for supporting JavaScript projects.",
   "main": "dist/index",
   "typings": "dist/index",
@@ -21,5 +21,7 @@
   "bugs": {
     "url": "https://github.com/grayarrow/jsutils/issues"
   },
-  "homepage": "https://github.com/grayarrow/jsutils#readme"
+  "homepage": "https://github.com/grayarrow/jsutils#readme",
+  "peerDependencies": {},
+  "dependencies": {}
 }
