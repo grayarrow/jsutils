@@ -1,4 +1,4 @@
-import { IName, IVal } from "./types"
+import { IName, IVal } from "./interfaces"
 
 export interface INameVal<Tval = string, Tname = string> extends IName<Tname>, IVal<Tval> { }
 

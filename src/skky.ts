@@ -1,7 +1,4 @@
-import { AnyFixLater } from "./types"
-
-export type TypeOrArray<T> = T | T[]
-export type StringOrStringArray = TypeOrArray<string>
+import { StringOrStringArray } from "./types"
 
 /**
  * Adds obj to the list of objects, creating the list if it doesn't exist.

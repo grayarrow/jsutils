@@ -1,5 +1,5 @@
 import { isNullOrUndefined, isObject } from "./skky"
-import { ICreatedBy, IId, IUpdatedBy } from "./types"
+import { ICreatedBy, IId, IUpdatedBy } from "./interfaces"
 
 export interface IIdCreated<Tid = string> extends IId<Tid>, ICreatedBy { }
 export interface IIdCreatedUpdated<Tid = string> extends IIdCreated<Tid>, IUpdatedBy { }

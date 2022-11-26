@@ -1,6 +1,9 @@
+import { GrayArrowException } from "./exception-types"
+import { GrayArrowObject } from "./GrayArrowObject"
 import { isObject, isArray, isString, timeDifference, timeDifferenceInSeconds, timeDifferenceString, safestr, getNumberString, safeArray, hasData } from "./skky"
+import { StringOrStringArray } from "./types"
 
-export class InstrumentationStatistics {
+export class InstrumentationStatistics extends GrayArrowObject {
   successes = 0
   failures = 0
   totalProcessed = 0
@@ -17,9 +20,15 @@ export class InstrumentationStatistics {
   finishTime?: Date
 
   constructor(totalProcessed?: number, numSuccesses?: number, numFailures?: number) {
+    super()
+
     this.totalProcessed = (totalProcessed || 0)
     this.successes = (numSuccesses || 0)
     this.failures = (numFailures || 0)
+  }
+
+  get className() {
+    return 'InstrumentationStatistics'
   }
 
   addStats(stats?: InstrumentationStatistics): void {
@@ -39,28 +48,31 @@ export class InstrumentationStatistics {
     }
   }
 
-  addMessage(msg: any): number {
-    if (isArray(msg, 1)) {
-      this.msg = this.msg.concat(msg)
+  addMessage(msg?: StringOrStringArray | object): number {
+    const fname = 'addMessage'
+
+    if (isArray(msg)) {
+      this.msg = this.msg.concat(msg as string[])
 
       return this.msg.length
     }
-    else if (isObject(msg, 1)) {
+    else if (isObject(msg)) {
       this.msg.push(JSON.stringify(msg))
 
       return this.msg.length
     }
     else if (isString(msg)) {
-      this.msg.push(msg)
+      this.msg.push(msg as string)
 
       return this.msg.length
     }
-    else if (msg) {
-      const s = String(msg)
-      this.msg.push(s)
-    }
+    // else if (msg) {
+    //   const s = String(msg)
+    //   this.msg.push(s)
+    // }
 
-    return 0
+    // return 0
+    throw new GrayArrowException('Message is not a string or set of strings.', this.classMethodString(fname), '' + msg)
   }
 
   addFailure(msg?: string): number {

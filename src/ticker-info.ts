@@ -1,7 +1,7 @@
 import { IdName } from './id-name'
 import { INameValue } from './name-value'
 import { isObject } from './skky'
-import { IDate, IId, IName, IPrice, ISlug, IType, IVal, I_Id } from './types'
+import { IDate, IName, IPrice, ISlug, IType, IVal, I_Id } from './interfaces'
 
 export interface ISymbol {
   symbol: string

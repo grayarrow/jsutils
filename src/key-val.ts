@@ -1,4 +1,4 @@
-import { IVal } from "./types"
+import { IVal } from "./interfaces"
 
 export interface IKeyVal<Tval = string, Tkey = string> extends IVal<Tval> {
   key: Tkey
